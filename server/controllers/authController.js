@@ -4,6 +4,9 @@ const jwt = require("jsonwebtoken");
 
 const registerUser = async (req, res) => {
   const { name, email, password, role = "patient" } = req.body;
+  if (role === "admin") {
+    return res.status(403).json({ message: "You cannot register as admin" });
+  }
   const userExists = await User.findOne({ email });
   if (userExists) {
     return res.status(400).json({ message: "User already exists" });
