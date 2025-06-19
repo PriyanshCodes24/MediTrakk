@@ -1,41 +1,40 @@
 const Appointment = require("../models/Appointment");
+const asyncHandler = require("express-async-handler");
 
-const createAppointment = async (req, res) => {
-  try {
-    const { doctor, date, time, reason } = req.body;
-    const patient = req.user.id;
-    const appointment = new Appointment({
-      patient,
-      doctor,
-      date,
-      time,
-      reason,
-    });
-    await appointment.save();
-    return res
-      .status(201)
-      .json({ message: "Appointment created", appointment });
-  } catch (e) {
-    console.error(e.message);
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
+const createAppointment = asyncHandler(async (req, res) => {
+  // try {
+  const { doctor, date, time, reason } = req.body;
+  const patient = req.user.id;
+  const appointment = new Appointment({
+    patient,
+    doctor,
+    date,
+    time,
+    reason,
+  });
+  await appointment.save();
+  return res.status(201).json({ message: "Appointment created", appointment });
+  // } catch (e) {
+  //   console.error(e.message);
+  //   return res.status(500).json({ message: "Server Error" });
+  // }
+});
 
-const getDoctorAppointments = async (req, res) => {
-  try {
-    const doctorId = req.user.id;
-    const appointments = await Appointment.find({ doctor: doctorId }).populate(
-      "patient",
-      "name email"
-    );
-    return res.status(200).json({ appointments });
-  } catch (e) {
-    console.error(err.message);
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
+const getDoctorAppointments = asyncHandler(async (req, res) => {
+  // try {
+  const doctorId = req.user.id;
+  const appointments = await Appointment.find({ doctor: doctorId }).populate(
+    "patient",
+    "name email"
+  );
+  return res.status(200).json({ appointments });
+  // } catch (e) {
+  //   console.error(err.message);
+  //   return res.status(500).json({ message: "Server Error" });
+  // }
+});
 
-const updateAppointmentStatus = async (req, res) => {
+const updateAppointmentStatus = asyncHandler(async (req, res) => {
   const doctor = req.user.id;
   const { appointmentId } = req.params;
   const { status } = req.body;
@@ -46,7 +45,7 @@ const updateAppointmentStatus = async (req, res) => {
   const appointment = await Appointment.findOne({ _id: appointmentId, doctor });
 
   if (!appointment)
-    return res.status(400).json({ message: "Appointment not found" });
+    return res.status(404).json({ message: "Appointment not found" });
 
   appointment.status = status;
   await appointment.save();
@@ -55,9 +54,9 @@ const updateAppointmentStatus = async (req, res) => {
     message: `Appointment status was updated to '${status}' successfully`,
     appointment,
   });
-};
+});
 
-const getPatientAppointments = async (req, res) => {
+const getPatientAppointments = asyncHandler(async (req, res) => {
   const patient = req.user.id;
   const appointments = await Appointment.find({ patient })
     .select("-__v")
@@ -67,9 +66,9 @@ const getPatientAppointments = async (req, res) => {
   return res
     .status(200)
     .json({ message: "Appointments Fetched Successfully", appointments });
-};
+});
 
-const getAllAppointments = async (req, res) => {
+const getAllAppointments = asyncHandler(async (req, res) => {
   const appointments = await Appointment.find()
     .populate("patient doctor", "name email")
     .select("-__v");
@@ -78,7 +77,7 @@ const getAllAppointments = async (req, res) => {
   return res
     .status(200)
     .json({ message: "Appointments Fetched Successfully", appointments });
-};
+});
 
 module.exports = {
   createAppointment,

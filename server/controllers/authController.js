@@ -1,8 +1,9 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const asyncHandler = require("express-async-handler");
 
-const registerUser = async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, role = "patient" } = req.body;
   if (role === "admin") {
     return res.status(403).json({ message: "You cannot register as admin" });
@@ -24,9 +25,9 @@ const registerUser = async (req, res) => {
   await newUser.save();
 
   return res.status(201).send("User Registerd Successfully");
-};
+});
 
-const loginUser = async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
@@ -55,6 +56,6 @@ const loginUser = async (req, res) => {
       role: user.role,
     },
   });
-};
+});
 
 module.exports = { registerUser, loginUser };
