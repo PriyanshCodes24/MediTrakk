@@ -57,8 +57,33 @@ const updateAppointmentStatus = async (req, res) => {
   });
 };
 
+const getPatientAppointments = async (req, res) => {
+  const patient = req.user.id;
+  const appointments = await Appointment.find({ patient })
+    .select("-__v")
+    .populate("doctor", "name email");
+  if (appointments.length === 0)
+    return res.status(404).json({ message: "No appointments found" });
+  return res
+    .status(200)
+    .json({ message: "Appointments Fetched Successfully", appointments });
+};
+
+const getAllAppointments = async (req, res) => {
+  const appointments = await Appointment.find()
+    .populate("patient doctor", "name email")
+    .select("-__v");
+  if (appointments.length === 0)
+    return res.status(404).json({ message: "No appointments found" });
+  return res
+    .status(200)
+    .json({ message: "Appointments Fetched Successfully", appointments });
+};
+
 module.exports = {
   createAppointment,
   getDoctorAppointments,
   updateAppointmentStatus,
+  getPatientAppointments,
+  getAllAppointments,
 };
