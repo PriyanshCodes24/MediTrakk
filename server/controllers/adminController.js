@@ -4,7 +4,6 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 
 const getAdminStats = asyncHandler(async (req, res) => {
-  //   try {
   const users = await User.countDocuments();
   const doctors = await User.countDocuments({ role: "doctor" });
   const patients = await User.countDocuments({ role: "patient" });
@@ -17,10 +16,6 @@ const getAdminStats = asyncHandler(async (req, res) => {
     patients,
     appointments,
   });
-  //   } catch (e) {
-  //     console.error(e.message);
-  //     return res.status(500).json({ message: "server error" });
-  //   }
 });
 
 const createAdmin = asyncHandler(async (req, res) => {

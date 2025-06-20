@@ -1,9 +1,13 @@
 const Appointment = require("../models/Appointment");
 const asyncHandler = require("express-async-handler");
+const User = require("../models/User");
 
 const createAppointment = asyncHandler(async (req, res) => {
-  // try {
   const { doctor, date, time, reason } = req.body;
+  const doctorExists = await User.findOne({ _id: doctor, role: "doctor" });
+  if (!doctorExists)
+    return res.status(404).json({ message: "Doctor not found" });
+
   const patient = req.user.id;
   const appointment = new Appointment({
     patient,
@@ -14,24 +18,21 @@ const createAppointment = asyncHandler(async (req, res) => {
   });
   await appointment.save();
   return res.status(201).json({ message: "Appointment created", appointment });
-  // } catch (e) {
-  //   console.error(e.message);
-  //   return res.status(500).json({ message: "Server Error" });
-  // }
 });
 
 const getDoctorAppointments = asyncHandler(async (req, res) => {
-  // try {
   const doctorId = req.user.id;
-  const appointments = await Appointment.find({ doctor: doctorId }).populate(
-    "patient",
-    "name email"
-  );
-  return res.status(200).json({ appointments });
-  // } catch (e) {
-  //   console.error(err.message);
-  //   return res.status(500).json({ message: "Server Error" });
-  // }
+  const appointments = await Appointment.find({ doctor: doctorId })
+    .populate("patient", "name email")
+    .select("-__v");
+  if (appointments.length === 0) {
+    return res.status(404).json({ message: "No appointments found" });
+  }
+
+  return res.status(200).json({
+    message: "Appointments fetched successfully",
+    appointments,
+  });
 });
 
 const updateAppointmentStatus = asyncHandler(async (req, res) => {
