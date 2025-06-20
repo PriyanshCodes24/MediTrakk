@@ -1,10 +1,17 @@
 const Appointment = require("../models/Appointment");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/User");
+const mongoose = require("mongoose");
 
 const createAppointment = asyncHandler(async (req, res) => {
   const { doctor, date, time, reason } = req.body;
-  const doctorExists = await User.findOne({ _id: doctor, role: "doctor" });
+  if (!mongoose.Types.ObjectId.isValid(doctor)) {
+    return res.status(400).json({ message: "Invalid Doctor ID" });
+  }
+  const doctorExists = await User.findOne({
+    _id: doctor,
+    role: "doctor",
+  }).lean();
   if (!doctorExists)
     return res.status(404).json({ message: "Doctor not found" });
 
@@ -22,7 +29,11 @@ const createAppointment = asyncHandler(async (req, res) => {
 
 const getDoctorAppointments = asyncHandler(async (req, res) => {
   const doctorId = req.user.id;
+  if (!mongoose.Types.ObjectId.isValid(doctorId)) {
+    return res.status(400).json({ message: "Invalid Doctor ID" });
+  }
   const appointments = await Appointment.find({ doctor: doctorId })
+    .lean()
     .populate("patient", "name email")
     .select("-__v");
   if (appointments.length === 0) {
@@ -43,7 +54,13 @@ const updateAppointmentStatus = asyncHandler(async (req, res) => {
   if (!["approved", "rejected"].includes(status))
     return res.status(400).json({ message: "Invalid status value" });
 
-  const appointment = await Appointment.findOne({ _id: appointmentId, doctor });
+  if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
+    return res.status(400).json({ message: "Invalid Doctor ID" });
+  }
+  const appointment = await Appointment.findOne({
+    _id: appointmentId,
+    doctor,
+  }).lean();
 
   if (!appointment)
     return res.status(404).json({ message: "Appointment not found" });
@@ -59,7 +76,11 @@ const updateAppointmentStatus = asyncHandler(async (req, res) => {
 
 const getPatientAppointments = asyncHandler(async (req, res) => {
   const patient = req.user.id;
+  if (!mongoose.Types.ObjectId.isValid(patient)) {
+    return res.status(400).json({ message: "Invalid Patient ID" });
+  }
   const appointments = await Appointment.find({ patient })
+    .lean()
     .select("-__v")
     .populate("doctor", "name email");
   if (appointments.length === 0)
@@ -71,6 +92,7 @@ const getPatientAppointments = asyncHandler(async (req, res) => {
 
 const getAllAppointments = asyncHandler(async (req, res) => {
   const appointments = await Appointment.find()
+    .lean()
     .populate("patient doctor", "name email")
     .select("-__v");
   if (appointments.length === 0)

@@ -4,10 +4,11 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, role = "patient" } = req.body;
-  if (role === "admin") {
-    return res.status(403).json({ message: "You cannot register as admin" });
-  }
+  const { name, email, password } = req.body;
+  const role = "patient";
+  // if (role === "admin") {
+  //   return res.status(403).json({ message: "You cannot register as admin" });
+  // }
   const userExists = await User.findOne({ email });
   if (userExists) {
     return res.status(400).json({ message: "User already exists" });
