@@ -9,6 +9,7 @@ const { body } = require("express-validator");
 const validateRequest = require("../middleware/validateRequest");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/User");
+const mongoose = require("mongoose");
 
 router.get("/me", protect, getUserProfile);
 router.put(

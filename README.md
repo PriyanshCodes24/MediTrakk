@@ -1,25 +1,42 @@
 # MediTrakk
 
-**MediTrakk** is a full-stack web application for managing patient health records, appointments, and prescriptions, with role-based access for **patients**, **doctors**, and **admins**.
+**MediTrakk** is a full-stack patient health record & appointment system built with Node.js, Express, MongoDB, and React (frontend coming soon). It allows patients to book appointments, doctors to manage their schedules, and admins to monitor system-wide stats and roles.
+
 
 ---
 
 ## Features
 
-- 🔐 JWT-based authentication & authorization
-- 🧑‍⚕️ Role-based access control (patient, doctor, admin)
-- 📅 Book & manage appointments
-- 🔒 Secure password hashing with bcrypt
-- 🌐 MongoDB Atlas integration
+### 👤 Authentication & Authorization
+- Register & login (Patient, Doctor)
+- JWT protected routes
+- Role-based access control (`admin`, `doctor`, `patient`)
+
+### 📅 Appointment System
+- Patients: Book appointments with doctors
+- Doctors: Approve or reject appointments
+- Admin: View all appointments
+- All: Cancel own appointments (Admins can cancel any)
+
+### 📊 Admin Dashboard
+- View total users, doctors, patients, appointments
+- Promote users to doctor
+- Create new admins (only by admin)
+
+### 👤 User Management
+- Get own profile
+- Update name or email
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Backend:** Node.js, Express.js, MongoDB, Mongoose
-- **Frontend:** React *(Planned)*
-- **Authentication:** JWT, bcrypt
-- **Deployment:** *(To be added)*
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB (Mongoose)
+- **Auth:** JWT (JSON Web Token)
+- **Validation:** express-validator
+- **Middleware:** Custom role-based auth, centralized error handling
+- **Testing Tool:** Postman
 
 ---
 
@@ -43,6 +60,21 @@ JWT_SECRET=your_jwt_secret_here
 ```
 
 
+🚀 Setup Instructions
+
+1. Clone the repo
+```bash
+git clone https://github.com/your-username/mediTrakk.git
+cd mediTrakk
+```
+2. Install dependencies
+```bash
+npm install
+```
+3. Start the server
+```bash
+npm run dev
+```
 
 ## Installation (Backend)
 
@@ -52,7 +84,41 @@ npm install
 npm run dev
 ```
 
+📬 API Endpoints (Highlights)
+Route	                        Method	Role	                Description
+--------------------------------------------------------------------------------------------------------------------------
+/api/auth/register	            POST	Public	                Register a patient or doctor
+/api/auth/login	                POST	Public	                Login & receive token
+/api/appointments	            POST	Patient	                Book appointment
+/api/appointments/patient	    GET	    Patient	                View own appointments
+/api/appointments/doctor	    GET	    Doctor	                View own appointments
+/api/appointments/:id/status	PUT	    Doctor	                Approve/Reject
+/api/appointments/:id	        DELETE  Patient/Doctor/Admin	Cancel appointment
+/api/admin/stats	            GET	    Admin	                View app stats
+/api/admin/create-admin	        POST	Admin	                Create new admin
+/api/admin/:id/make-doctor	    PUT	    Admin	                Promote user to doctor
 
+✅ All input data is validated using express-validator.
+
+
+🧾 To-Do
+
+ ✅Role-based auth middleware
+
+ ✅Appointment management
+
+ ✅Admin control panel (API)
+
+ ✅Request validation
+
+ ⬜React frontend (coming soon)
+
+ ⬜Upload reports & prescriptions
+
+ ⬜Filter & sort appointments
+
+🤝 Contributing
+Pull requests are welcome! For major changes, open an issue first.
 
 👤 **Author**  
 [Priyansh Patel](https://www.linkedin.com/in/priyansh-patel-091b3824b/)

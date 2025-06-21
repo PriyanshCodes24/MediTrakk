@@ -15,6 +15,12 @@ const createAppointment = asyncHandler(async (req, res) => {
   if (!doctorExists)
     return res.status(404).json({ message: "Doctor not found" });
 
+  const alreadyBooked = await Appointment.findOne({ doctor, date, time });
+  if (alreadyBooked) {
+    return res
+      .status(400)
+      .json({ message: "Doctor already has an appointment at this time" });
+  }
   const patient = req.user.id;
   const appointment = new Appointment({
     patient,
@@ -102,10 +108,38 @@ const getAllAppointments = asyncHandler(async (req, res) => {
     .json({ message: "Appointments Fetched Successfully", appointments });
 });
 
+const cancelAppointment = asyncHandler(async (req, res) => {
+  const user = req.user.id;
+  const role = req.user.role;
+  const appointmentId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(appointmentId))
+    return res.status(400).json({ message: "Invalid Appointment ID" });
+
+  const appointment = await Appointment.findById(appointmentId);
+  if (!appointment)
+    return res.status(404).json({ message: "Appointment not found" });
+
+  if (
+    role !== "admin" &&
+    ((role === "patient" && appointment.patient.toString() !== user) ||
+      (role === "doctor" && appointment.doctor.toString() !== user))
+  )
+    return res
+      .status(403)
+      .json({ message: "Not authorized to cancel this appointment" });
+
+  await appointment.deleteOne();
+  return res
+    .status(200)
+    .json({ message: "Appointment deleted successfully", appointment });
+});
+
 module.exports = {
   createAppointment,
   getDoctorAppointments,
   updateAppointmentStatus,
   getPatientAppointments,
   getAllAppointments,
+  cancelAppointment,
 };

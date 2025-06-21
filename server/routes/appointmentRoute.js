@@ -7,6 +7,7 @@ const {
   updateAppointmentStatus,
   getPatientAppointments,
   getAllAppointments,
+  cancelAppointment,
 } = require("../controllers/appointmentController");
 const { body } = require("express-validator");
 const validateRequest = require("../middleware/validateRequest");
@@ -67,6 +68,13 @@ router.put(
   ],
   validateRequest,
   updateAppointmentStatus
+);
+
+router.delete(
+  "/:id",
+  protect,
+  authorizeRole("patient", "doctor", "admin"),
+  cancelAppointment
 );
 
 module.exports = router;
