@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -8,6 +9,7 @@ export const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setUser } = useAuth();
 
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -24,9 +26,10 @@ export const Login = () => {
         email: email.trim(),
         password: password.trim(),
       });
+      setUser(data.user);
       localStorage.setItem("token", data.token);
       navigate("/dashboard");
-      // console.log("Login Success:", data);
+      // <Navigate to="/dashboard" />;
     } catch (error) {
       console.log("Login failed:", error);
     }
