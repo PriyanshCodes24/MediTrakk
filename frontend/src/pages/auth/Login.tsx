@@ -22,7 +22,7 @@ export const Login = () => {
     e.preventDefault();
 
     try {
-      const { data } = await axios.post(`${API}/auth/login`, {
+      const { data } = await axios.post(`${API}/login`, {
         email: email.trim(),
         password: password.trim(),
       });

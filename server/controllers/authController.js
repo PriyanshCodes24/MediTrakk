@@ -25,7 +25,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
   await newUser.save();
 
-  return res.status(201).send("User Registerd Successfully");
+  return res
+    .status(201)
+    .json({ message: "User Registerd Successfully", user: newUser });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
