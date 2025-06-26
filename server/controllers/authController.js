@@ -25,9 +25,24 @@ const registerUser = asyncHandler(async (req, res) => {
 
   await newUser.save();
 
-  return res
-    .status(201)
-    .json({ message: "User Registerd Successfully", user: newUser });
+  const token = jwt.sign(
+    { id: newUser._id, role: newUser.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  const safeUser = {
+    id: newUser._id,
+    name: newUser.name,
+    email: newUser.email,
+    role: newUser.role,
+  };
+
+  return res.status(201).json({
+    message: "User Registerd Successfully",
+    token,
+    user: safeUser,
+  });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
