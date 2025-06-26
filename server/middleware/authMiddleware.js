@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const asyncHandler = require("express-async-handler");
 
-const protect = async (req, res, next) => {
+const protect = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "No token, authorization denied" });
@@ -16,7 +17,7 @@ const protect = async (req, res, next) => {
   } catch (e) {
     return res.status(401).json({ message: "Invalid or expired token " });
   }
-};
+});
 
 const authorizeRole = (...roles) => {
   return (req, res, next) => {

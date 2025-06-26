@@ -1,12 +1,15 @@
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 
-const getUserProfile = asyncHandler((req, res) => {
-  const user = req.user;
+const getUserProfile = asyncHandler(async (req, res) => {
+  if (!req.user || !req.user.id) {
+    return res.status(401).json({ message: "Not authorized" });
+  }
+  const user = await User.findById(req.user.id).select("-password");
   if (!user) return res.status(401).json({ message: "User not found" });
   return res
     .status(200)
-    .json({ message: "User profile fetched successfully", user: user });
+    .json({ message: "User profile fetched successfully", user });
 });
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);

@@ -42,12 +42,14 @@ export const Navbar = () => {
           Dashboard
         </Link>
         {user && (
-          <button
-            className="hover:text-gray-200 hover:underline cursor-pointer transition"
-            onClick={logoutHandler}
-          >
-            Sign Out
-          </button>
+          <span>
+            <button
+              className="hover:text-gray-200 hover:underline cursor-pointer transition"
+              onClick={logoutHandler}
+            >
+              Sign Out
+            </button>
+          </span>
         )}
       </div>
     </nav>
