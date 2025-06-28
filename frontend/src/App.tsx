@@ -4,6 +4,8 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Dashboard } from "./pages/Dashboard";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { Navbar } from "./components/Navbar";
+import { Toaster } from "react-hot-toast";
+import EditProfile from "./pages/EditProfile";
 import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 
@@ -13,7 +15,7 @@ const AppRoutes = () => {
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center text-lg">
-        Checking Authentication
+        Checking Authentication...
       </div>
     );
   }
@@ -32,7 +34,16 @@ const AppRoutes = () => {
           }
         />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/edit-profile"
+          element={
+            <ProtectedRoute>
+              <EditProfile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
+      <Toaster position="top-right" reverseOrder={false} />
     </>
   );
 };
