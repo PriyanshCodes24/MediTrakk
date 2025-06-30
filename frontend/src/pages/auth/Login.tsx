@@ -52,7 +52,7 @@ export const Login = () => {
     }
   };
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-400">
+    <div className="h-screen flex items-center justify-center bg-gray-200">
       <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-sm">
         <h1 className="text-center text-xl font-bold mb-4">Welcome Back</h1>
 
