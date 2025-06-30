@@ -4,6 +4,7 @@ const { protect, authorizeRole } = require("../middleware/authMiddleware");
 const {
   getUserProfile,
   updateUserProfile,
+  getDoctorList,
 } = require("../controllers/userController");
 const { body } = require("express-validator");
 const validateRequest = require("../middleware/validateRequest");
@@ -12,6 +13,7 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 
 router.get("/me", protect, getUserProfile);
+router.get("/doctors", protect, getDoctorList);
 router.put(
   "/update",
   protect,

@@ -8,6 +8,7 @@ import { Toaster } from "react-hot-toast";
 import EditProfile from "./pages/EditProfile";
 import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
+import CreateAppointment from "./pages/CreateAppointment";
 
 const AppRoutes = () => {
   const { loading } = useAuth();
@@ -39,6 +40,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <EditProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-appointment"
+          element={
+            <ProtectedRoute>
+              <CreateAppointment />
             </ProtectedRoute>
           }
         />

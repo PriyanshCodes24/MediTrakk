@@ -31,4 +31,14 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     .json({ message: "User Updated Successfully", user: updatedUser });
 });
 
-module.exports = { getUserProfile, updateUserProfile };
+const getDoctorList = asyncHandler(async (req, res) => {
+  const doctors = await User.find({ role: "doctor" }).select("-__v -password");
+  if (doctors.length === 0) {
+    return res.status(404).json({ message: "Doctors not found" });
+  }
+  return res
+    .status(200)
+    .json({ message: "Doctor-list fetched successfully", doctors });
+});
+
+module.exports = { getUserProfile, updateUserProfile, getDoctorList };
