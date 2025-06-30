@@ -5,6 +5,13 @@ const mongoose = require("mongoose");
 
 const createAppointment = asyncHandler(async (req, res) => {
   const { doctor, date, time, reason } = req.body;
+
+  const [day, month, year] = date.split("-");
+  const formattedDate = new Date(`${year}-${month}-${day}`);
+  if (isNaN(formattedDate.getTime())) {
+    return res.status(400).json({ message: "Invalid date" });
+  }
+
   if (!mongoose.Types.ObjectId.isValid(doctor)) {
     return res.status(400).json({ message: "Invalid Doctor ID" });
   }
@@ -15,21 +22,25 @@ const createAppointment = asyncHandler(async (req, res) => {
   if (!doctorExists)
     return res.status(404).json({ message: "Doctor not found" });
 
-  const alreadyBooked = await Appointment.findOne({ doctor, date, time });
+  const alreadyBooked = await Appointment.findOne({
+    doctor,
+    date: formattedDate,
+    time,
+  });
   if (alreadyBooked) {
     return res
       .status(400)
       .json({ message: "Doctor already has an appointment at this time" });
   }
   const patient = req.user.id;
-  const appointment = new Appointment({
+  const appointment = await Appointment.create({
     patient,
     doctor,
-    date,
+    date: formattedDate,
     time,
     reason,
   });
-  await appointment.save();
+  // await appointment.save();
   return res.status(201).json({ message: "Appointment created", appointment });
 });
 
