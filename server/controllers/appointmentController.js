@@ -96,7 +96,14 @@ const getPatientAppointments = asyncHandler(async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(patient)) {
     return res.status(400).json({ message: "Invalid Patient ID" });
   }
-  const appointments = await Appointment.find({ patient })
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const appointments = await Appointment.find({
+    patient,
+    $expr: {
+      $gte: [{ $dateTrunc: { date: "$date", unit: "day" } }, today],
+    },
+  })
     .lean()
     .select("-__v")
     .populate("doctor", "name email");

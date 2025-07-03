@@ -32,7 +32,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 });
 
 const getDoctorList = asyncHandler(async (req, res) => {
-  const doctors = await User.find({ role: "doctor" }).select("-__v -password");
+  const doctors = await User.find({ role: "doctor" }).select(
+    "-__v -password -role"
+  );
   if (doctors.length === 0) {
     return res.status(404).json({ message: "Doctors not found" });
   }

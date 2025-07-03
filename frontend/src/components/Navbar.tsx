@@ -36,6 +36,12 @@ export const Navbar = () => {
           </Link>
         )}
         <Link
+          to="/create-appointment"
+          className="hover:text-gray-200 hover:underline transitions"
+        >
+          Create-Appoinment
+        </Link>
+        <Link
           to="/dashboard"
           className=" hover:text-gray-200 hover:underline transition"
         >
