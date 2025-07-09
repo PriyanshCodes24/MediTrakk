@@ -35,18 +35,30 @@ export const Navbar = () => {
             Sign Up
           </Link>
         )}
-        <Link
-          to="/create-appointment"
-          className="hover:text-gray-200 hover:underline transitions"
-        >
-          Create-Appoinment
-        </Link>
-        <Link
-          to="/dashboard"
-          className=" hover:text-gray-200 hover:underline transition"
-        >
-          Dashboard
-        </Link>
+        {user && (
+          <Link
+            to="/create-appointment"
+            className="hover:text-gray-200 hover:underline transitions"
+          >
+            Create-Appoinment
+          </Link>
+        )}
+        {user && (
+          <Link
+            to="/upload-report"
+            className="hover:text-gray-200 hover:underline transitions"
+          >
+            Upload-Report
+          </Link>
+        )}
+        {user && (
+          <Link
+            to="/dashboard"
+            className=" hover:text-gray-200 hover:underline transition"
+          >
+            Dashboard
+          </Link>
+        )}
         {user && (
           <span>
             <button

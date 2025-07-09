@@ -10,6 +10,7 @@ import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import CreateAppointment from "./pages/CreateAppointment";
 import MyReports from "./pages/MyReports";
+import UploadReport from "./pages/UploadReport";
 
 const AppRoutes = () => {
   const { loading } = useAuth();
@@ -57,6 +58,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <MyReports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/upload-report"
+          element={
+            <ProtectedRoute>
+              <UploadReport />
             </ProtectedRoute>
           }
         />
