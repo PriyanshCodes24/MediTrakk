@@ -104,6 +104,7 @@ const getPatientAppointments = asyncHandler(async (req, res) => {
       $gte: [{ $dateTrunc: { date: "$date", unit: "day" } }, today],
     },
   })
+    .sort({ date: 1, time: 1 })
     .lean()
     .select("-__v")
     .populate("doctor", "name email");

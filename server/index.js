@@ -2,6 +2,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 dotenv.config();
 connectDB();
@@ -15,6 +16,8 @@ app.use("/api", require("./routes/authRoute"));
 app.use("/api/users", require("./routes/userRoute"));
 app.use("/api/appointments", require("./routes/appointmentRoute"));
 app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/reports", require("./routes/reportRoute"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(require("./middleware/errorMiddleware"));
 

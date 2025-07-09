@@ -9,6 +9,7 @@ import EditProfile from "./pages/EditProfile";
 import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import CreateAppointment from "./pages/CreateAppointment";
+import MyReports from "./pages/MyReports";
 
 const AppRoutes = () => {
   const { loading } = useAuth();
@@ -48,6 +49,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <CreateAppointment />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <MyReports />
             </ProtectedRoute>
           }
         />
