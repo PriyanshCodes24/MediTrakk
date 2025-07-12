@@ -53,6 +53,8 @@ export const Dashboard = () => {
   }, []);
 
   const handleCancleButton = async (id: string) => {
+    if (!window.confirm("Are you sure you want to cancel the appointment?"))
+      return;
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`${API}/appointments/${id}`, {
@@ -102,6 +104,7 @@ export const Dashboard = () => {
                     </p>
                     <button
                       onClick={() => handleCancleButton(appt._id)}
+                      type="button"
                       className="text-xs bg-blue-400 hover:bg-blue-500 mt-1 text-white rounded-lg px-1 py-1 border cursor-pointer transition"
                     >
                       Cancel

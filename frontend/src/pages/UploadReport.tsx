@@ -1,11 +1,12 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import toast from "react-hot-toast";
 
 const API = import.meta.env.VITE_API_URL;
 
 const UploadReport = () => {
   const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -13,6 +14,11 @@ const UploadReport = () => {
 
     if (!file) {
       toast.error("Please select a file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File must be smaller than 5MB");
       return;
     }
 
@@ -26,11 +32,14 @@ const UploadReport = () => {
       const { data } = await axios.post(`${API}/reports/upload`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
         },
       });
       toast.success("File uploaded succeessfully");
       console.log(data);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      setFile(null);
     } catch (e) {
       toast.error("File upload failed");
     } finally {
@@ -56,6 +65,7 @@ const UploadReport = () => {
         >
           <input
             type="file"
+            ref={fileInputRef}
             accept=".pdf,.jpg,.jpeg,.png"
             className="block w-full text-sm text-gray-600 file:text-white
                        file:mr-4 file:bg-blue-400 hover:file:bg-blue-500

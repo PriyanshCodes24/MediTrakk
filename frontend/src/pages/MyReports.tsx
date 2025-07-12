@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const API = import.meta.env.VITE_API_URL;
 const BASE_URL = API.replace("/api", "");
@@ -15,6 +16,8 @@ type Report = {
 const MyReports = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingDelete, setLoadingDelete] = useState(false);
+
   useEffect(() => {
     const fetchReports = async () => {
       try {
@@ -50,6 +53,29 @@ const MyReports = () => {
       console.log("Download failed", e);
     }
   };
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete the appointment?"))
+      return;
+    try {
+      setLoadingDelete(true);
+      const token = localStorage.getItem("token");
+      const { data } = await axios.delete(`${API}/reports/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(data);
+      setReports((prev) => prev.filter((rep) => rep._id !== id));
+      toast.success("Report deleted successfully");
+    } catch (e: any) {
+      toast.error(
+        e?.response?.data?.message || "Report could not be deleted: "
+      );
+    } finally {
+      setLoadingDelete(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
       <h2 className="text-xl font-semibold mb-4 text-gray-800 ">My Reports</h2>
@@ -96,6 +122,14 @@ const MyReports = () => {
                   className="bg-blue-400 text-white rounded-lg px-2 py-1 mt-2 cursor-pointer hover:bg-blue-500"
                 >
                   Download
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(rep._id)}
+                  disabled={loadingDelete}
+                  className="ml-2 bg-blue-400 text-white rounded-lg px-2 py-1 mt-2 cursor-pointer hover:bg-blue-500"
+                >
+                  {loadingDelete ? "Deleting..." : "Delete"}
                 </button>
               </p>
             </li>
