@@ -31,8 +31,18 @@ const getReportController = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Report fetched successfully", report });
 });
 
-const getReports = asyncHandler(async (req, res) => {
+const getPatientReports = asyncHandler(async (req, res) => {
   const reports = await Report.find({ user: req.user._id })
+    .select("-__v -createdAt -updatedAt")
+    .sort({
+      createdAt: -1,
+    });
+  if (!reports.length || reports.length === 0)
+    return res.status(404).json({ message: "No Reports Found" });
+  res.status(200).json({ message: "Reports fetched successfully", reports });
+});
+const getDoctorReports = asyncHandler(async (req, res) => {
+  const reports = await Report.find({})
     .select("-__v -createdAt -updatedAt")
     .sort({
       createdAt: -1,
@@ -67,6 +77,7 @@ const deleteReport = asyncHandler(async (req, res) => {
 module.exports = {
   uploadReportController,
   getReportController,
-  getReports,
+  getPatientReports,
+  getDoctorReports,
   deleteReport,
 };

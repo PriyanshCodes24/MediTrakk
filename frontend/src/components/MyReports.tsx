@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
 const API = import.meta.env.VITE_API_URL;
 const BASE_URL = API.replace("/api", "");
@@ -17,12 +18,14 @@ const MyReports = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingDelete, setLoadingDelete] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
         const token = localStorage.getItem("token");
-        const { data } = await axios.get(`${API}/reports`, {
+        console.log(user?.role);
+        const { data } = await axios.get(`${API}/reports/${user?.role}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

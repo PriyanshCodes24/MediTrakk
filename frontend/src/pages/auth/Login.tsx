@@ -42,7 +42,8 @@ export const Login = () => {
       });
       setUser(data.user);
       localStorage.setItem("token", data.token);
-      navigate("/dashboard");
+      if (data.user?.role === "patient") navigate("/dashboard");
+      else if (data.user?.role === "doctor") navigate("/doctor-dashboard");
     } catch (error: any) {
       setError(
         error?.response?.data?.message || "Login failed. Please try again"

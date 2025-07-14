@@ -10,6 +10,7 @@ export const Navbar = () => {
       navigate("/login");
     }
   };
+
   return (
     <nav className="bg-blue-500 p-4 flex text-white justify-end">
       <div className="flex gap-4">
@@ -35,7 +36,7 @@ export const Navbar = () => {
             Sign Up
           </Link>
         )}
-        {user && (
+        {user?.role === "patient" && (
           <Link
             to="/create-appointment"
             className="hover:text-gray-200 hover:underline transitions"
@@ -51,12 +52,20 @@ export const Navbar = () => {
             Upload-Report
           </Link>
         )}
-        {user && (
+        {user?.role === "patient" && (
           <Link
             to="/dashboard"
             className=" hover:text-gray-200 hover:underline transition"
           >
             Dashboard
+          </Link>
+        )}
+        {user?.role === "doctor" && (
+          <Link
+            to="/doctor-dashboard"
+            className=" hover:text-gray-200 hover:underline transition"
+          >
+            D-Dashboard
           </Link>
         )}
         {user && (

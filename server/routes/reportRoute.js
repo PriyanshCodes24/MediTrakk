@@ -3,7 +3,8 @@ const router = express.Router();
 const {
   uploadReportController,
   getReportController,
-  getReports,
+  getPatientReports,
+  getDoctorReports,
   deleteReport,
 } = require("../controllers/reportController");
 const { protect } = require("../middleware/authMiddleware");
@@ -16,8 +17,9 @@ router.post(
   uploadReportController
 );
 
-router.get("/:id", protect, getReportController);
-router.get("/", protect, getReports);
+router.get("/user/:id", protect, getReportController);
+router.get("/patient", protect, getPatientReports);
+router.get("/doctor", protect, getDoctorReports);
 router.delete("/:id", protect, deleteReport);
 
 module.exports = router;

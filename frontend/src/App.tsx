@@ -2,15 +2,17 @@ import { Routes, Route } from "react-router-dom";
 import { Login } from "./pages/auth/Login";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Dashboard } from "./pages/Dashboard";
-import { ProtectedRoute } from "./routes/ProtectedRoute";
+import { ProtectedRoute, RoleProtectedRoute } from "./routes/ProtectedRoute";
 import { Navbar } from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 import EditProfile from "./pages/EditProfile";
 import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import CreateAppointment from "./pages/CreateAppointment";
-import MyReports from "./pages/MyReports";
+import MyReports from "./components/MyReports";
 import UploadReport from "./pages/UploadReport";
+import DoctorDashboard from "./pages/DoctorDashboard";
+import MyAppointments from "./components/MyAppointments";
 
 const AppRoutes = () => {
   const { loading } = useAuth();
@@ -31,9 +33,17 @@ const AppRoutes = () => {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <RoleProtectedRoute requiredRole="patient">
               <Dashboard />
-            </ProtectedRoute>
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor-dashboard"
+          element={
+            <RoleProtectedRoute requiredRole="doctor">
+              <DoctorDashboard />
+            </RoleProtectedRoute>
           }
         />
         <Route path="/register" element={<Register />} />
@@ -48,9 +58,9 @@ const AppRoutes = () => {
         <Route
           path="/create-appointment"
           element={
-            <ProtectedRoute>
+            <RoleProtectedRoute requiredRole="patient">
               <CreateAppointment />
-            </ProtectedRoute>
+            </RoleProtectedRoute>
           }
         />
         <Route
@@ -58,6 +68,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <MyReports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/appointments"
+          element={
+            <ProtectedRoute>
+              <MyAppointments />
             </ProtectedRoute>
           }
         />
