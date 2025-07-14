@@ -3,6 +3,7 @@ const Report = require("../models/Report");
 const asyncHandler = require("express-async-handler");
 const fs = require("fs");
 const path = require("path");
+const DoctorPatient = require("../models/DoctorPatient");
 
 const uploadReportController = asyncHandler(async (req, res) => {
   if (!req.file) return res.status(400).json({ message: "No file uploaded" });
@@ -42,8 +43,14 @@ const getPatientReports = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Reports fetched successfully", reports });
 });
 const getDoctorReports = asyncHandler(async (req, res) => {
-  const reports = await Report.find({})
-    .select("-__v -createdAt -updatedAt")
+  const patients = await DoctorPatient.find({ doctor: req.user._id }).select(
+    "patient"
+  );
+  const patientIds = patients.map((entry) => entry.patient);
+
+  const reports = await Report.find({ user: { $in: patientIds } })
+    .populate("user", "name email")
+    .select("-__v -updatedAt")
     .sort({
       createdAt: -1,
     });

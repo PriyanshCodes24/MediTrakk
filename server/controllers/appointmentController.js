@@ -2,6 +2,7 @@ const Appointment = require("../models/Appointment");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/User");
 const mongoose = require("mongoose");
+const DoctorPatient = require("../models/DoctorPatient");
 
 const createAppointment = asyncHandler(async (req, res) => {
   const { doctor, date, time, reason } = req.body;
@@ -40,7 +41,11 @@ const createAppointment = asyncHandler(async (req, res) => {
     time,
     reason,
   });
-  // await appointment.save();
+  await DoctorPatient.updateOne(
+    { doctor, patient },
+    {},
+    { upsert: true, setDefaultsOnInsert: true }
+  );
   return res.status(201).json({ message: "Appointment created", appointment });
 });
 

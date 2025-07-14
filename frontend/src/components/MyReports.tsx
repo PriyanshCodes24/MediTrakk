@@ -8,6 +8,10 @@ const BASE_URL = API.replace("/api", "");
 
 type Report = {
   _id: string;
+  user: {
+    name: string;
+    email: string;
+  };
   fileUrl: string;
   fileName: string;
   fileType: string;
@@ -90,6 +94,12 @@ const MyReports = () => {
         <ul className="text-gray-700 space-y-4 text-sm">
           {reports.map((rep) => (
             <li key={rep._id} className="border-b pb-4">
+              <p>
+                <strong>Patient:</strong>{" "}
+                <span className="text-gray-700">
+                  {rep.user?.name || "Unknown"}
+                </span>
+              </p>
               <p>
                 <strong>Name:</strong>{" "}
                 <span className="text-gray-700">{rep.fileName}</span>

@@ -1,19 +1,21 @@
 const mongoose = require("mongoose");
 
-const doctorPatientSchema = mongoose.Schema(
+const doctorPatientSchema = new mongoose.Schema(
   {
     patient: {
       type: mongoose.Types.ObjectId,
       ref: "User",
-      //   required: true,
-      unique: true,
+      required: true,
     },
     doctor: {
       type: mongoose.Types.ObjectId,
       ref: "User",
-      //   required: true,
-      unique: true,
+      required: true,
     },
   },
-  { doctor: 1, patient: 1 }
+  { timestamps: true }
 );
+
+doctorPatientSchema.index({ doctor: 1, patient: 1 }, { unique: true });
+
+module.exports = mongoose.model("DoctorPatient", doctorPatientSchema);
