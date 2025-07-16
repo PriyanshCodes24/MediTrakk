@@ -11,8 +11,8 @@ import Home from "./pages/Home";
 import CreateAppointment from "./pages/CreateAppointment";
 import MyReports from "./components/MyReports";
 import UploadReport from "./pages/UploadReport";
-import DoctorDashboard from "./pages/DoctorDashboard";
 import MyAppointments from "./components/MyAppointments";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const AppRoutes = () => {
   const { loading } = useAuth();
@@ -30,23 +30,23 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route
           path="/dashboard"
           element={
-            <RoleProtectedRoute requiredRole="patient">
+            <ProtectedRoute>
               <Dashboard />
-            </RoleProtectedRoute>
+            </ProtectedRoute>
           }
         />
         <Route
-          path="/doctor-dashboard"
+          path="/admin-dashboard"
           element={
-            <RoleProtectedRoute requiredRole="doctor">
-              <DoctorDashboard />
+            <RoleProtectedRoute requiredRole="admin">
+              <AdminDashboard />
             </RoleProtectedRoute>
           }
         />
-        <Route path="/register" element={<Register />} />
         <Route
           path="/edit-profile"
           element={

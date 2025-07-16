@@ -5,12 +5,14 @@ import UserProfile from "../components/UserProfile";
 
 export const Dashboard = () => {
   const { user } = useAuth();
+  let greet = "";
+  if (user.role === "doctor") greet = " Dr. ";
 
   return (
     <div className="min-h-screen py-8 px-4 bg-gray-100">
       <div className="max-w-6xl mx-auto  ">
         <h1 className="text-3xl  font-bold mb-8 text-center text-gray-800">
-          Welcome, {user?.name || "User"}
+          {`Welcome,${greet} ${user?.name || "User"}`}
         </h1>
         <div className=" grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {/* card-1 */}

@@ -52,7 +52,7 @@ export const Navbar = () => {
             Upload-Report
           </Link>
         )}
-        {user?.role === "patient" && (
+        {user?.role !== "admin" && (
           <Link
             to="/dashboard"
             className=" hover:text-gray-200 hover:underline transition"
@@ -60,12 +60,12 @@ export const Navbar = () => {
             Dashboard
           </Link>
         )}
-        {user?.role === "doctor" && (
+        {user?.role === "admin" && (
           <Link
-            to="/doctor-dashboard"
+            to="/admin-dashboard"
             className=" hover:text-gray-200 hover:underline transition"
           >
-            D-Dashboard
+            Dashboard
           </Link>
         )}
         {user && (

@@ -136,14 +136,16 @@ const MyReports = () => {
                 >
                   Download
                 </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(rep._id)}
-                  disabled={loadingDelete}
-                  className="ml-2 bg-blue-400 text-white rounded-lg px-2 py-1 mt-2 cursor-pointer hover:bg-blue-500"
-                >
-                  {loadingDelete ? "Deleting..." : "Delete"}
-                </button>
+                {user?.role === "patient" && (
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(rep._id)}
+                    disabled={loadingDelete}
+                    className="ml-2 bg-blue-400 text-white rounded-lg px-2 py-1 mt-2 cursor-pointer hover:bg-blue-500"
+                  >
+                    {loadingDelete ? "Deleting..." : "Delete"}
+                  </button>
+                )}
               </p>
             </li>
           ))}
