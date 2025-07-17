@@ -5,35 +5,42 @@
 
 ---
 
-## Features
+# User Roles
+**Patient**:
 
-### 👤 Authentication & Authorization
-- Register & login (Patient, Doctor)
-- JWT protected routes
-- Role-based access control (`admin`, `doctor`, `patient`)
+    Register/Login
 
-### 📅 Appointment System
-- Patients: Book appointments with doctors
-- Doctors: Approve or reject appointments
-- Admin: View all appointments
-- All: Cancel own appointments (Admins can cancel any)
+    Book & cancel appointments
 
-### 📊 Admin Dashboard
-- View total users, doctors, patients, appointments
-- Promote users to doctor
-- Create new admins (only by admin)
+    Upload & view reports
 
-### 👤 User Management
-- Get own profile
-- Update name or email
+    View profile
+
+**Doctor**:
+
+    View appointments
+
+    View reports of their patients
+
+    View profile
+
+**Admin**:
+
+    View all users
+    
+    Update user roles (WIP)
+    
+    View system stats (WIP)
 
 ---
 
 ## 🛠 Tech Stack
 
+- **Frontend:**  React, TypeScript, Tailwind CSS
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB (Mongoose)
 - **Auth:** JWT (JSON Web Token)
+- **File Uploads:** Multer
 - **Validation:** express-validator
 - **Middleware:** Custom role-based auth, centralized error handling
 - **Testing Tool:** Postman
@@ -51,12 +58,18 @@
 
 ## Environment Variables
 
-Create a `.env` file in the `/server` directory with the following:
+Create a `.env` file in the `/server` and `/frontend` directory with the following:
 
+server:
 ```env
 PORT=5000
 MONGO_URI=your_mongo_uri_here
 JWT_SECRET=your_jwt_secret_here
+```
+
+frontend:
+```
+VITE_API_URL=http://localhost:5000/api
 ```
 
 
@@ -67,55 +80,48 @@ JWT_SECRET=your_jwt_secret_here
 git clone https://github.com/your-username/mediTrakk.git
 cd mediTrakk
 ```
-2. Install dependencies
-```bash
-npm install
-```
-3. Start the server
-```bash
-npm run dev
-```
-
-## Installation (Backend)
-
+2. Set up Backend
 ```bash
 cd server
 npm install
 npm run dev
 ```
-
-📬 API Endpoints (Highlights)
-Route	                        Method	Role	                Description
---------------------------------------------------------------------------------------------------------------------------
-/api/auth/register	            POST	Public	                Register a patient or doctor
-/api/auth/login	                POST	Public	                Login & receive token
-/api/appointments	            POST	Patient	                Book appointment
-/api/appointments/patient	    GET	    Patient	                View own appointments
-/api/appointments/doctor	    GET	    Doctor	                View own appointments
-/api/appointments/:id/status	PUT	    Doctor	                Approve/Reject
-/api/appointments/:id	        DELETE  Patient/Doctor/Admin	Cancel appointment
-/api/admin/stats	            GET	    Admin	                View app stats
-/api/admin/create-admin	        POST	Admin	                Create new admin
-/api/admin/:id/make-doctor	    PUT	    Admin	                Promote user to doctor
-
-✅ All input data is validated using express-validator.
+3. Set up Frontend
+```bash
+cd client
+npm install
+npm run dev
+```
 
 
-🧾 To-Do
+Features Implemented
 
- ✅Role-based auth middleware
+✅ JWT-based Authentication & Authorization
 
- ✅Appointment management
+✅ Role-based access control
 
- ✅Admin control panel (API)
+✅ Patient Appointment Booking & Cancellation
 
- ✅Request validation
+✅ Report Upload (PDF/JPG/PNG)
 
- ⬜React frontend (coming soon)
+✅ Doctor can view reports of their assigned patients
 
- ⬜Upload reports & prescriptions
+✅ User-friendly UI with reusable components
 
- ⬜Filter & sort appointments
+✅ RESTful API design
+
+✅ Protected Routes on Frontend
+
+
+ To Do (In Progress)
+
+⏳ Admin Dashboard
+
+⏳ Forgot Password Flow
+
+⏳ Search/Filter Appointments
+
+⏳ Pagination for reports
 
 🤝 Contributing
 Pull requests are welcome! For major changes, open an issue first.
