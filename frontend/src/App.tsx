@@ -12,6 +12,7 @@ import CreateAppointment from "./pages/CreateAppointment";
 import MyReports from "./components/MyReports";
 import UploadReport from "./pages/UploadReport";
 import MyAppointments from "./components/MyAppointments";
+import Delete from "./components/Delete";
 import AdminDashboard from "./pages/AdminDashboard";
 
 const AppRoutes = () => {
@@ -87,6 +88,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/random" element={<Delete />} />
       </Routes>
       <Toaster position="top-right" reverseOrder={false} />
     </>

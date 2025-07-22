@@ -50,12 +50,12 @@ router.post(
       .notEmpty()
       .withMessage("Password is required")
       .isLength({ min: 6 })
-      .withMessage("Password must be atleast 6 characters"),
-    // .bail()
-    // .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/)
-    // .withMessage(
-    //   "Password must contain at least one uppercase, one lowercase letter, and one number"
-    // ),
+      .withMessage("Password must be atleast 6 characters")
+      .bail()
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/)
+      .withMessage(
+        "Password must contain at least one uppercase, one lowercase letter, and one number"
+      ),
   ],
   validateRequest,
   loginUser

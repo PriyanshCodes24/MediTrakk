@@ -6,9 +6,9 @@ const asyncHandler = require("express-async-handler");
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   const role = "patient";
-  // if (role === "admin") {
-  //   return res.status(403).json({ message: "You cannot register as admin" });
-  // }
+  if (role === "admin") {
+    return res.status(403).json({ message: "You cannot register as admin" });
+  }
   const userExists = await User.findOne({ email });
   if (userExists) {
     return res.status(400).json({ message: "User already exists" });
@@ -55,7 +55,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   if (!isMatch) return res.status(401).json({ message: "Wrong Password" });
 
-  const token = await jwt.sign(
+  const token = jwt.sign(
     {
       id: user._id,
       role: user.role,

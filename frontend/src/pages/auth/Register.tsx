@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -31,13 +32,12 @@ const Register = () => {
         email: email.trim(),
         password: password.trim(),
       });
-
       setUser(data.user);
       localStorage.setItem("token", data.token);
       console.log("Register Response:", data);
       navigate("/dashboard");
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      toast.error(e?.response?.data?.errors[0].message);
     }
   };
 
