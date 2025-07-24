@@ -28,13 +28,13 @@ const MyReports = () => {
     const fetchReports = async () => {
       try {
         const token = localStorage.getItem("token");
-        console.log(user?.role);
         const { data } = await axios.get(`${API}/reports/${user?.role}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setReports(data.reports);
+        console.log(data);
       } catch (e) {
         console.log("Failed to fetch reports", e);
       } finally {
@@ -85,7 +85,9 @@ const MyReports = () => {
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 ">My Reports</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-800 ">
+        My Reports({reports.length})
+      </h2>
       {loading ? (
         <p className="text-gray-500">Loading...</p>
       ) : reports.length === 0 ? (

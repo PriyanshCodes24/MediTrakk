@@ -44,6 +44,7 @@ export const MyAppointments = () => {
         });
 
         setAppointments(upcoming);
+        console.log(data);
       } catch (e) {
         console.error("Failed to fetch appointments", e);
       } finally {
@@ -74,7 +75,7 @@ export const MyAppointments = () => {
     <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
       {/* card-1 */}
       <h2 className="text-xl font-semibold mb-4 text-gray-800">
-        Upcoming Appointments
+        Upcoming Appointments({appointments.length})
       </h2>
       {loadingAppointments ? (
         <p className="text-gray-500">Loading...</p>

@@ -52,10 +52,20 @@ const getDoctorReports = asyncHandler(async (req, res) => {
     .populate("user", "name email")
     .select("-__v -updatedAt")
     .sort({
-      createdAt: -1,
+      uploadedAt: -1,
     });
   if (!reports.length || reports.length === 0)
     return res.status(404).json({ message: "No Reports Found" });
+  res.status(200).json({ message: "Reports fetched successfully", reports });
+});
+
+const getAdminReports = asyncHandler(async (req, res) => {
+  const reports = await Report.find({})
+    .populate("user", "name email")
+    .select("-__v -createdAt")
+    .sort({ uploadedAt: -1 });
+  if (reports.length === 0)
+    res.status(404).json({ message: "No reports found" });
   res.status(200).json({ message: "Reports fetched successfully", reports });
 });
 
@@ -85,6 +95,7 @@ module.exports = {
   uploadReportController,
   getReportController,
   getPatientReports,
+  getAdminReports,
   getDoctorReports,
   deleteReport,
 };

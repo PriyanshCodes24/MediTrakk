@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Appointment = require("../models/Appointment");
+const Report = require("../models/Report");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 
@@ -8,6 +9,7 @@ const getAdminStats = asyncHandler(async (req, res) => {
   const doctors = await User.countDocuments({ role: "doctor" });
   const patients = await User.countDocuments({ role: "patient" });
   const appointments = await Appointment.countDocuments();
+  const reports = await Report.countDocuments();
 
   return res.status(200).json({
     message: "Stats fetched successfully",
@@ -15,6 +17,7 @@ const getAdminStats = asyncHandler(async (req, res) => {
     doctors,
     patients,
     appointments,
+    reports,
   });
 });
 

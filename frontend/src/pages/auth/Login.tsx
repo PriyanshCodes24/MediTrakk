@@ -31,8 +31,8 @@ export const Login = () => {
       });
       setUser(data.user);
       localStorage.setItem("token", data.token);
+      toast.success("Logged in successfully");
       if (data.user?.role === "admin") navigate("/admin-dashboard");
-      else if (data.user?.role === "doctor") navigate("/doctor-dashboard");
       else navigate("/dashboard");
     } catch (error: any) {
       console.log(error);

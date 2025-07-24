@@ -35,9 +35,19 @@ const Register = () => {
       setUser(data.user);
       localStorage.setItem("token", data.token);
       console.log("Register Response:", data);
+      toast.success("Signed up successfully");
       navigate("/dashboard");
     } catch (e: any) {
-      toast.error(e?.response?.data?.errors[0].message);
+      console.log(e);
+
+      const errData = e?.response?.data;
+      if (errData.errors && Array.isArray(errData.errors)) {
+        toast.error(errData?.errors[0]?.message);
+      } else if (errData.message) {
+        toast.error(errData?.message);
+      } else {
+        toast.error("Register failed");
+      }
     }
   };
 

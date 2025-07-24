@@ -26,7 +26,7 @@ const getDoctorList = asyncHandler(async (req, res) => {
 });
 
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({});
+  const users = await User.find({}).select("-__v -password");
   if (users.length === 0)
     return res.status(404).json({ message: "No users found" });
 

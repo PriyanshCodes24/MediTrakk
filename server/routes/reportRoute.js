@@ -5,9 +5,10 @@ const {
   getReportController,
   getPatientReports,
   getDoctorReports,
+  getAdminReports,
   deleteReport,
 } = require("../controllers/reportController");
-const { protect } = require("../middleware/authMiddleware");
+const { protect, authorizeRole } = require("../middleware/authMiddleware");
 const upload = require("../middleware/multer");
 
 router.post(
@@ -19,7 +20,8 @@ router.post(
 
 router.get("/user/:id", protect, getReportController);
 router.get("/patient", protect, getPatientReports);
-router.get("/doctor", protect, getDoctorReports);
+router.get("/doctor", protect, authorizeRole("doctor"), getDoctorReports);
+router.get("/admin", protect, authorizeRole("admin"), getAdminReports);
 router.delete("/:id", protect, deleteReport);
 
 module.exports = router;
