@@ -70,8 +70,8 @@ router.put(
   updateAppointmentStatus
 );
 
-router.delete(
-  "/:id",
+router.patch(
+  "/:id/cancel",
   protect,
   authorizeRole("patient", "doctor", "admin"),
   cancelAppointment

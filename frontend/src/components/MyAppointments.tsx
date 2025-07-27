@@ -40,7 +40,7 @@ export const MyAppointments = () => {
         const upcoming = data.appointments.filter((appt: Appointment) => {
           const apptDate = new Date(appt.date);
           apptDate.setHours(0, 0, 0, 0);
-          return apptDate >= today;
+          return apptDate >= today && appt.status !== "cancelled";
         });
 
         setAppointments(upcoming);
@@ -59,14 +59,20 @@ export const MyAppointments = () => {
       return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`${API}/appointments/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.patch(
+        `${API}/appointments/${id}/cancel`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // setAppointments((prev) => prev.filter((appt) => appt));
       setAppointments((prev) => prev.filter((appt) => appt._id != id));
       toast.success("Appointment canceled successfully");
-    } catch (e) {
+    } catch (e: any) {
+      console.log(e);
       toast.error(`Appointment couldn't be canceled: ${e}`);
     }
   };

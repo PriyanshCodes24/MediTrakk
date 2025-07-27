@@ -153,10 +153,11 @@ const cancelAppointment = asyncHandler(async (req, res) => {
       .status(403)
       .json({ message: "Not authorized to cancel this appointment" });
 
-  await appointment.deleteOne();
+  appointment.status = "cancelled";
+  appointment.save();
   return res
     .status(200)
-    .json({ message: "Appointment deleted successfully", appointment });
+    .json({ message: "Appointment canceled successfully", appointment });
 });
 
 module.exports = {

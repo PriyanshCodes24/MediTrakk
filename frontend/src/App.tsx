@@ -14,9 +14,13 @@ import UploadReport from "./pages/UploadReport";
 import MyAppointments from "./components/MyAppointments";
 import Delete from "./components/Delete";
 import AdminDashboard from "./pages/AdminDashboard";
+import { useEffect } from "react";
 
 const AppRoutes = () => {
   const { loading } = useAuth();
+  useEffect(() => {
+    document.title = "Meditrakk";
+  }, []);
 
   if (loading) {
     return (
@@ -27,6 +31,7 @@ const AppRoutes = () => {
   }
   return (
     <>
+      <link rel="icon" href="/logo" />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
