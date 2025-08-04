@@ -68,34 +68,6 @@ const getDoctorAppointments = asyncHandler(async (req, res) => {
   });
 });
 
-const updateAppointmentStatus = asyncHandler(async (req, res) => {
-  const doctor = req.user.id;
-  const { appointmentId } = req.params;
-  const { status } = req.body;
-
-  if (!["approved", "rejected"].includes(status))
-    return res.status(400).json({ message: "Invalid status value" });
-
-  if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
-    return res.status(400).json({ message: "Invalid Doctor ID" });
-  }
-  const appointment = await Appointment.findOne({
-    _id: appointmentId,
-    doctor,
-  }).lean();
-
-  if (!appointment)
-    return res.status(404).json({ message: "Appointment not found" });
-
-  appointment.status = status;
-  await appointment.save();
-
-  return res.status(200).json({
-    message: `Appointment status was updated to '${status}' successfully`,
-    appointment,
-  });
-});
-
 const getPatientAppointments = asyncHandler(async (req, res) => {
   const patient = req.user.id;
   if (!mongoose.Types.ObjectId.isValid(patient)) {
@@ -159,6 +131,36 @@ const cancelAppointment = asyncHandler(async (req, res) => {
     .status(200)
     .json({ message: "Appointment canceled successfully", appointment });
 });
+
+const updateAppointmentStatus = (newStatus) =>
+  asyncHandler(async (req, res) => {
+    const user = req.user.id;
+    const appointmentId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(appointmentId))
+      return res.status(400).json({ message: "Invalid Appointment ID" });
+
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment)
+      return res.status(404).json({ message: "Appointment not found" });
+
+    if (appointment.status !== "pending")
+      return res
+        .status(400)
+        .json({ message: "Appointment is not in pending state" });
+
+    if (appointment.doctor.toString() !== user)
+      return res
+        .status(403)
+        .json({ message: "Not authorized to approve this appointment" });
+
+    appointment.status = newStatus;
+    await appointment.save();
+    res.status(200).json({
+      message: `Appointment ${newStatus} successfully`,
+      appointment,
+    });
+  });
 
 module.exports = {
   createAppointment,

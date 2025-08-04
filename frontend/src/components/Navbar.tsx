@@ -14,12 +14,12 @@ export const Navbar = () => {
   return (
     <nav className="bg-blue-500 p-4 flex text-white justify-end">
       <div className="flex gap-4">
-        <Link
+        {/* <Link
           to="/"
           className=" hover:text-gray-200 hover:underline transition"
         >
           Home
-        </Link>
+        </Link> */}
         {!user && (
           <Link
             to="/login"

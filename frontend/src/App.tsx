@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./pages/auth/Login";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Dashboard } from "./pages/Dashboard";
@@ -7,7 +7,7 @@ import { Navbar } from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 import EditProfile from "./pages/EditProfile";
 import Register from "./pages/auth/Register";
-import Home from "./pages/Home";
+// import Home from "./pages/Home";
 import CreateAppointment from "./pages/CreateAppointment";
 import MyReports from "./components/MyReports";
 import UploadReport from "./pages/UploadReport";
@@ -34,7 +34,8 @@ const AppRoutes = () => {
       <link rel="icon" href="/logo" />
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
+        {/* <Route path="/" element={<Home />} /> */}
+        <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route

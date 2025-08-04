@@ -22,7 +22,7 @@ const protect = asyncHandler(async (req, res, next) => {
 const authorizeRole = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ message: "Access Denied" });
+      return res.status(403).json({ message: "Access Denied, Invalid Role" });
     }
     next();
   };

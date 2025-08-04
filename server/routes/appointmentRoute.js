@@ -54,27 +54,40 @@ router.get(
   authorizeRole("patient"),
   getPatientAppointments
 );
-router.put(
-  "/:appointmentId/status",
-  protect,
-  authorizeRole("doctor"),
-  [
-    body("status")
-      .trim()
-      .notEmpty()
-      .withMessage("Mention a Status")
-      .isIn(["approved", "rejected"])
-      .withMessage("Status must be either approved or rejected"),
-  ],
-  validateRequest,
-  updateAppointmentStatus
-);
+// router.put(
+//   "/:appointmentId/status",
+//   protect,
+//   authorizeRole("doctor"),
+//   [
+//     body("status")
+//       .trim()
+//       .notEmpty()
+//       .withMessage("Mention a Status")
+//       .isIn(["approved", "rejected"])
+//       .withMessage("Status must be either approved or rejected"),
+//   ],
+//   validateRequest,
+//   updateAppointmentStatus
+// );
 
 router.patch(
   "/:id/cancel",
   protect,
   authorizeRole("patient", "doctor", "admin"),
   cancelAppointment
+);
+
+router.patch(
+  "/:id/approve",
+  protect,
+  authorizeRole("doctor"),
+  updateAppointmentStatus("approved")
+);
+router.patch(
+  "/:id/reject",
+  protect,
+  authorizeRole("doctor"),
+  updateAppointmentStatus("rejected")
 );
 
 module.exports = router;
