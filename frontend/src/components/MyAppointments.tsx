@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 type Appointment = {
   _id: string;
   date: string;
-  time: string;
   reason?: string;
   status?: string;
   doctor: {
@@ -38,12 +37,10 @@ export const MyAppointments = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
         const upcoming = data.appointments.filter((appt: Appointment) => {
           const apptDate = new Date(appt.date);
-          apptDate.setHours(0, 0, 0, 0);
-          const isUpcoming = apptDate >= today;
+          const now = new Date();
+          const isUpcoming = apptDate >= now;
           const matchStatus =
             filterStatus === "" || appt.status === filterStatus;
           return isUpcoming && matchStatus;
@@ -187,7 +184,7 @@ export const MyAppointments = () => {
                   {new Date(appt.date).toLocaleDateString()}
                 </p>
                 <p>
-                  <strong>Time:</strong> {appt.time}
+                  <strong>Time:</strong> {appt.date.split("T")[1].split(".")[0]}
                 </p>
                 {user?.role === "patient" && (
                   <p>

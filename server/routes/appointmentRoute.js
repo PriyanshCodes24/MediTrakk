@@ -23,18 +23,18 @@ router.post(
       .withMessage("Doctor ID is required")
       .isMongoId()
       .withMessage("Invalid Doctor ID"),
-    body("date")
-      .trim()
-      .notEmpty()
-      .withMessage("Date is required")
-      .matches(/^\d{2}-\d{2}-\d{4}$/)
-      .withMessage("Date must be in DD-MM-YYYY format"),
-    body("time")
-      .trim()
-      .notEmpty()
-      .withMessage("Time is required")
-      .matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
-      .withMessage("Time must be in HH:mm format (24-hour clock)"),
+    // body("date")
+    //   .trim()
+    //   .notEmpty()
+    //   .withMessage("Date is required")
+    //   .matches(/^\d{2}-\d{2}-\d{4}$/)
+    //   .withMessage("Date must be in DD-MM-YYYY format"),
+    // body("time")
+    //   .trim()
+    //   .notEmpty()
+    //   .withMessage("Time is required")
+    //   .matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
+    //   .withMessage("Time must be in HH:mm format (24-hour clock)"),
     body("reason")
       .notEmpty()
       .withMessage("Reason is required")
@@ -54,21 +54,6 @@ router.get(
   authorizeRole("patient"),
   getPatientAppointments
 );
-// router.put(
-//   "/:appointmentId/status",
-//   protect,
-//   authorizeRole("doctor"),
-//   [
-//     body("status")
-//       .trim()
-//       .notEmpty()
-//       .withMessage("Mention a Status")
-//       .isIn(["approved", "rejected"])
-//       .withMessage("Status must be either approved or rejected"),
-//   ],
-//   validateRequest,
-//   updateAppointmentStatus
-// );
 
 router.patch(
   "/:id/cancel",

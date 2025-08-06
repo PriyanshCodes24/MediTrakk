@@ -4,12 +4,33 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 const DoctorPatient = require("../models/DoctorPatient");
 
-const createAppointment = asyncHandler(async (req, res) => {
-  const { doctor, date, time, reason } = req.body;
+const updateStatus = async () => {
+  const now = new Date();
+  try {
+    const updated = await Appointment.updateMany(
+      {
+        status: "approved",
+        date: { $lt: now },
+      },
+      { $set: { status: "completed" } }
+    );
+    console.log(`${updated.modifiedCount} appointments marked as completed.`);
 
-  const [day, month, year] = date.split("-");
-  const formattedDate = new Date(`${year}-${month}-${day}`);
-  if (isNaN(formattedDate.getTime())) {
+    const deleted = await Appointment.deleteMany({
+      status: { $in: ["rejected", "cancelled"] },
+      date: { $lt: now },
+    });
+    console.log(`${deleted.modifiedCount} appointments marked as completed.`);
+  } catch (error) {
+    console.error("Status update failed:", error.message);
+  }
+};
+
+const createAppointment = asyncHandler(async (req, res) => {
+  const { doctor, date, reason } = req.body;
+
+  const appointmentDate = new Date(date);
+  if (isNaN(appointmentDate.getTime())) {
     return res.status(400).json({ message: "Invalid date" });
   }
 
@@ -23,10 +44,17 @@ const createAppointment = asyncHandler(async (req, res) => {
   if (!doctorExists)
     return res.status(404).json({ message: "Doctor not found" });
 
+  const slotStart = new Date(appointmentDate);
+  const slotEnd = new Date(appointmentDate);
+  slotStart.setMinutes(slotStart.getMinutes() - 15);
+  slotEnd.setMinutes(slotEnd.getMinutes() + 15);
+
   const alreadyBooked = await Appointment.findOne({
     doctor,
-    date: formattedDate,
-    time,
+    date: {
+      $gte: slotStart,
+      $lt: slotEnd,
+    },
   });
   if (alreadyBooked) {
     return res
@@ -37,8 +65,7 @@ const createAppointment = asyncHandler(async (req, res) => {
   const appointment = await Appointment.create({
     patient,
     doctor,
-    date: formattedDate,
-    time,
+    date: appointmentDate,
     reason,
   });
   await DoctorPatient.updateOne(
@@ -54,6 +81,7 @@ const getDoctorAppointments = asyncHandler(async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(doctorId)) {
     return res.status(400).json({ message: "Invalid Doctor ID" });
   }
+  await updateStatus();
   const appointments = await Appointment.find({ doctor: doctorId })
     .lean()
     .populate("patient", "name email")
@@ -73,15 +101,14 @@ const getPatientAppointments = asyncHandler(async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(patient)) {
     return res.status(400).json({ message: "Invalid Patient ID" });
   }
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  await updateStatus();
+
+  const now = new Date();
   const appointments = await Appointment.find({
     patient,
-    $expr: {
-      $gte: [{ $dateTrunc: { date: "$date", unit: "day" } }, today],
-    },
+    date: { $gte: now },
   })
-    .sort({ date: 1, time: 1 })
+    .sort({ date: 1 })
     .lean()
     .select("-__v")
     .populate("doctor", "name email");
@@ -93,6 +120,7 @@ const getPatientAppointments = asyncHandler(async (req, res) => {
 });
 
 const getAllAppointments = asyncHandler(async (req, res) => {
+  await updateStatus();
   const appointments = await Appointment.find()
     .lean()
     .populate("patient doctor", "name email")

@@ -15,11 +15,10 @@ const CreateAppointment = () => {
   const [selectOption, setSelectOption] = useState("");
   const [doctorsList, setDoctorsList] = useState<Doctor[]>([]);
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
   const [reason, setReason] = useState("");
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  //   const [loadingDoctors, setLoadingDoctors] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleOption = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectOption(e.target.value);
@@ -27,6 +26,7 @@ const CreateAppointment = () => {
   };
   useEffect(() => {
     const fetchDoctors = async () => {
+      setLoading(true);
       try {
         const { data } = await axios.get(`${API}/users/doctors`, {
           headers: {
@@ -38,7 +38,7 @@ const CreateAppointment = () => {
       } catch (e) {
         console.log("Failed to fetch doctors-list", e);
       } finally {
-        // setLoadingDoctors(false);
+        setLoading(false);
       }
     };
     fetchDoctors();
@@ -46,29 +46,26 @@ const CreateAppointment = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!selectOption || !date || !time || !reason) {
+    if (!selectOption || !date || !reason) {
       return toast.error("Please fill in all the fields");
     }
 
-    const [year, month, day] = date.split("-");
-    const formattedDate = `${day}-${month}-${year}`;
-
     try {
-      const { data } = await axios.post(
+      /*const { data } =*/ await axios.post(
         `${API}/appointments`,
-        { doctor: selectOption, date: formattedDate, time, reason },
+        { doctor: selectOption, date, reason },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      console.log(data);
+      // console.log(data);
       toast.success("Appointment created successfully");
       navigate("/dashboard");
-    } catch (e) {
+    } catch (e: any) {
       console.log("Failed to to create appointment", e);
-      toast.error("something went wrong");
+      toast.error(e.response.data.message);
     }
   };
   return (
@@ -94,23 +91,12 @@ const CreateAppointment = () => {
             </select>
           </label>
           <label className="block">
-            <span className="text-gray-700">Select Date</span>
+            <span className="text-gray-700">Select Date and Time</span>
             <input
-              type="date"
+              type="datetime-local"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               className="block mt-1 border border-gray-300 p-2 shadow-sm rounded-md w-full focus:border-blue-500 focus:ring-blue-500"
-            />
-          </label>
-          <label className="block">
-            <span className="text-gray-700">Select Time</span>
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => {
-                setTime(e.target.value);
-              }}
-              className="block mt-1 border border-gray-300 w-full rounded-full p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </label>
           <label className="block">
@@ -125,9 +111,10 @@ const CreateAppointment = () => {
 
           <button
             type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg cursor-pointer hover:bg-blue-600 w-full transition"
+            className="bg-blue-500  text-white py-2 px-4 rounded-lg cursor-pointer hover:bg-blue-600 w-full transition"
+            disabled={loading}
           >
-            Create
+            {!loading ? "Create" : "Creating..."}
           </button>
         </form>
       </div>

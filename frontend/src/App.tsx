@@ -96,7 +96,7 @@ const AppRoutes = () => {
         />
         <Route path="/random" element={<Delete />} />
       </Routes>
-      <Toaster position="top-right" reverseOrder={false} />
+      <Toaster position="top-left" reverseOrder={false} />
     </>
   );
 };
