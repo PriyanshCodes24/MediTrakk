@@ -62,7 +62,7 @@ const AllReports = () => {
     }
   };
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
+    <div className="overflow-y-auto max-h-[600px] bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
       <h2 className="font-semibold text-gray-700 text-xl mb-4">
         Uploaded Reports ({reports.length})
       </h2>
@@ -77,23 +77,23 @@ const AllReports = () => {
               <p>
                 <strong>Uploader: </strong>
                 <span className="text-gray-700">
-                  {report.user.name} (
-                  <span className="text-gray-500">{report.user.email}</span>)
+                  {report?.user?.name}(
+                  <span className="text-gray-500">{report?.user?.email}</span>)
                 </span>
               </p>
               <p>
                 <strong>Name: </strong>
-                <span className="text-gray-700">{report.fileName}</span>
+                <span className="text-gray-700">{report?.fileName}</span>
               </p>
 
               <p>
                 <strong>Type: </strong>
-                <span className="text-gray-700">{report.fileType}</span>
+                <span className="text-gray-700">{report?.fileType}</span>
               </p>
               <p>
                 <strong>UploadedAt: </strong>
                 <span className="text-gray-700">
-                  {new Date(report.uploadedAt).toUTCString()}
+                  {new Date(report?.uploadedAt).toUTCString()}
                 </span>
               </p>
               <button

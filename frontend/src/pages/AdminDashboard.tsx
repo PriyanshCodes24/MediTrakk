@@ -2,9 +2,28 @@ import AllReports from "../components/Admin/AllReports";
 import AllUsers from "../components/Admin/AllUsers";
 import AdminStats from "../components/Admin/AdminStats";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && (user?.role === "patient" || user?.role === "doctor"))
+      navigate("/dashboard");
+  }, [loading, user?.role]);
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p className="text-gray-500 text-lg">Loading...</p>
+      </div>
+    );
+  }
+
+  let greet = "";
+  if (user.role === "doctor") greet = " Dr. ";
+
   return (
     <div className="h-screen px-4 py-8 bg-gray-100">
       <div className="max-w-6xl mx-auto">

@@ -2,11 +2,18 @@ import { useAuth } from "../context/AuthContext";
 import MyReports from "../components/MyReports";
 import MyAppointments from "../components/MyAppointments";
 import UserProfile from "../components/UserProfile";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   let greet = "";
   if (user.role === "doctor") greet = " Dr. ";
+  useEffect(() => {
+    if (user?.role === "admin") navigate("/admin-dashboard");
+    else navigate("/dashboard");
+  }, [user?.role]);
 
   return (
     <div className="min-h-screen py-8 px-4 bg-gray-100">

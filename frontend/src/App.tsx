@@ -15,6 +15,7 @@ import MyAppointments from "./components/MyAppointments";
 import Delete from "./components/Delete";
 import AdminDashboard from "./pages/AdminDashboard";
 import { useEffect } from "react";
+import ChangeRole from "./components/Admin/ChangeRole";
 
 const AppRoutes = () => {
   const { loading } = useAuth();
@@ -92,6 +93,14 @@ const AppRoutes = () => {
             <ProtectedRoute>
               <UploadReport />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/change-role/:id"
+          element={
+            <RoleProtectedRoute requiredRole="admin">
+              <ChangeRole />
+            </RoleProtectedRoute>
           }
         />
         <Route path="/random" element={<Delete />} />

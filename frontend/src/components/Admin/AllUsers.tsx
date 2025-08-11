@@ -1,5 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 type User = {
   _id: string;
@@ -11,8 +13,12 @@ type User = {
 const API = import.meta.env.VITE_API_URL;
 
 const AllUsers = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -24,7 +30,7 @@ const AllUsers = () => {
           },
         });
         setUsers(data.users);
-        console.log(data);
+        // console.log(data);
       } catch (e: any) {
         console.log(e);
       } finally {
@@ -33,8 +39,30 @@ const AllUsers = () => {
     };
     fetchUsers();
   }, []);
+  const handleDelete = async (id: string) => {
+    try {
+      if (!window.confirm("Are you sure you want to delete the report?"))
+        return;
+      setLoadingDelete(true);
+      await axios.delete(`${API}/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setUsers((objs) => objs.filter((obj) => obj._id !== id));
+
+      toast.success("User deleted successfully");
+    } catch (e: any) {
+      console.log(e);
+      toast.error("User could not be deleted");
+    } finally {
+      setLoadingDelete(false);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
+    <div className="max-h-[600px] overflow-y-auto bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
       <h2 className="font-semibold  text-gray-800 text-xl mb-4">
         Users Registerd ({users.length})
       </h2>
@@ -54,7 +82,7 @@ const AllUsers = () => {
                 <strong>Email: </strong>
                 {user.email}
               </p>
-              <p>
+              <p className="flex items-center gap-2">
                 <strong>Role: </strong>
                 <span
                   className={`${
@@ -63,11 +91,27 @@ const AllUsers = () => {
                       : user.role === "doctor"
                       ? "text-blue-500"
                       : "text-green-500"
-                  }`}
+                  } `}
                 >
                   {user.role}
                 </span>
+                <button
+                  type="button"
+                  className="ml-auto px-2 py-1 text-xs text-white bg-yellow-400  rounded-md hover:bg-yellow-500 cursor-pointer  "
+                  onClick={() => navigate(`/change-role/${user._id}`)}
+                >
+                  Change
+                </button>
               </p>
+              {
+                <button
+                  type="button"
+                  className="text-white bg-blue-400 px-2 py-1 rounded-md hover:bg-blue-500 cursor-pointer mt-2 "
+                  onClick={() => handleDelete(user._id)}
+                >
+                  {loadingDelete ? "deleting..." : "delete"}
+                </button>
+              }
             </li>
           ))}
         </ul>

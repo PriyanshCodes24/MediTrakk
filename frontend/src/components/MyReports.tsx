@@ -84,7 +84,10 @@ const MyReports = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
+    <div
+      className="overflow-y-auto max-h-[628px]
+    bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl"
+    >
       <h2 className="text-xl font-semibold mb-4 text-gray-800 ">
         My Reports({reports.length})
       </h2>

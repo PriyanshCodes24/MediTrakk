@@ -145,7 +145,7 @@ export const MyAppointments = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
+    <div className="overflow-y-auto max-h-[628px] bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
       {/* card-1 */}
       <h2 className="text-xl font-semibold mb-4 text-gray-800">
         Upcoming Appointments({appointments.length})
