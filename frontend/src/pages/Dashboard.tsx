@@ -1,7 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import MyReports from "../components/MyReports";
 import MyAppointments from "../components/MyAppointments";
-import UserProfile from "../components/UserProfile";
+// import UserProfile from "../components/UserProfile";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -21,13 +21,11 @@ export const Dashboard = () => {
         <h1 className="text-3xl  font-bold mb-8 text-center text-gray-800">
           {`Welcome,${greet} ${user?.name || "User"}`}
         </h1>
-        <div className=" grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className=" grid gap-6 grid-cols-1 sm:grid-cols-2 ">
           {/* card-1 */}
           <MyAppointments />
           {/* card-2 */}
           <MyReports />
-          {/* card-3 */}
-          <UserProfile />
         </div>
       </div>
     </div>

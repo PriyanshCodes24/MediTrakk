@@ -12,10 +12,10 @@ import CreateAppointment from "./pages/CreateAppointment";
 import MyReports from "./components/MyReports";
 import UploadReport from "./pages/UploadReport";
 import MyAppointments from "./components/MyAppointments";
-import Delete from "./components/Delete";
 import AdminDashboard from "./pages/AdminDashboard";
 import { useEffect } from "react";
 import ChangeRole from "./components/Admin/ChangeRole";
+import UserProfile from "./components/UserProfile";
 
 const AppRoutes = () => {
   const { loading } = useAuth();
@@ -53,6 +53,14 @@ const AppRoutes = () => {
             <RoleProtectedRoute requiredRole="admin">
               <AdminDashboard />
             </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
           }
         />
         <Route
@@ -103,7 +111,6 @@ const AppRoutes = () => {
             </RoleProtectedRoute>
           }
         />
-        <Route path="/random" element={<Delete />} />
       </Routes>
       <Toaster position="top-left" reverseOrder={false} />
     </>

@@ -68,6 +68,14 @@ export const Navbar = () => {
             Dashboard
           </Link>
         )}
+
+        <Link
+          to="/profile"
+          className=" hover:text-gray-200 hover:underline transition"
+        >
+          Profile
+        </Link>
+
         {user && (
           <span>
             <button
