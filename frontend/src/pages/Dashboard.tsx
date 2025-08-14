@@ -21,12 +21,31 @@ export const Dashboard = () => {
         <h1 className="text-3xl  font-bold mb-8 text-center text-gray-800">
           {`Welcome,${greet} ${user?.name || "User"}`}
         </h1>
+        {/* Quick Actions */}
+        <div className="flex flex-wrap gap-4 mb-8">
+          <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer">
+            Book Appointment
+          </button>
+          <button className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 cursor-pointer">
+            View Profile
+          </button>
+          <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 cursor-pointer">
+            Upload Report
+          </button>
+        </div>
+
+        {/* Overview Section */}
+        <div></div>
+
         <div className=" grid gap-6 grid-cols-1 sm:grid-cols-2 ">
           {/* card-1 */}
           <MyAppointments />
           {/* card-2 */}
           <MyReports />
         </div>
+
+        {/* companion window */}
+        <div className="mt-8">{/* <CompanionWindow /> */}</div>
       </div>
     </div>
   );

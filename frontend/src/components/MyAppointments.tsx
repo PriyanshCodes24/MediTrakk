@@ -146,7 +146,7 @@ export const MyAppointments = () => {
 
   return (
     <div className="overflow-y-auto max-h-[628px] bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
-      {/* card-1 */}
+      {/* Header */}
       <h2 className="text-xl font-semibold mb-4 text-gray-800">
         Upcoming Appointments({appointments.length})
       </h2>
@@ -178,77 +178,96 @@ export const MyAppointments = () => {
         <>
           <ul className="text-gray-700 space-y-4 text-sm">
             {appointments.map((appt) => (
-              <li key={appt._id} className="border-b pb-6">
-                <p>
-                  <strong>Date:</strong>{" "}
-                  {new Date(appt.date).toLocaleDateString()}
-                </p>
-                <p>
-                  <strong>Time:</strong> {appt.date.split("T")[1].split(".")[0]}
-                </p>
-                {user?.role === "patient" && (
-                  <p>
-                    <strong>Doctor:</strong> {appt.doctor.name}
-                  </p>
-                )}
-                {user?.role === "doctor" && (
-                  <p>
-                    <strong>Patient:</strong> {appt.patient.name}
-                  </p>
-                )}
-                <p>
-                  <strong>Email:</strong>{" "}
-                  {user?.role === "doctor"
-                    ? appt.patient.email
-                    : appt.doctor.email}
-                </p>
-                <p>
-                  <strong>Reason:</strong> {appt.reason}
-                </p>
-                <p>
-                  <strong>Status:</strong>{" "}
-                  <span
-                    className={`
-                    ${appt.status === "approved" && "text-green-600"}
-                    ${appt.status === "rejected" && "text-red-700"}
-                    ${appt.status === "cancelled" && "text-orange-500"}
-                    ${appt.status === "pending" && "text-yellow-500"}
-                    ${appt.status === "completed" && "text-blue-600"}
-                    `}
-                  >
-                    {appt.status}
-                  </span>
-                </p>
-                {(user?.role === "patient"
-                  ? ["approved", "pending", undefined].includes(appt?.status)
-                  : appt.status === "approved") && (
-                  <button
-                    onClick={() => handleCancleButton(appt._id)}
-                    type="button"
-                    className="text-xs bg-blue-400 hover:bg-blue-500 mt-1 text-white rounded-lg px-1 py-1 border cursor-pointer transition"
-                  >
-                    Cancel
-                  </button>
-                )}
-                {user?.role === "doctor" && appt.status === "pending" && (
-                  <button
-                    onClick={() => handleApproveButton(appt._id)}
-                    type="button"
-                    className="text-xs bg-blue-400 mr-1 hover:bg-blue-500 mt-2 text-white rounded-lg px-1 py-1 border cursor-pointer transition"
-                  >
-                    Approve
-                  </button>
-                )}
-                {user?.role === "doctor" && appt.status === "pending" && (
-                  <button
-                    onClick={() => handleRejectButton(appt._id)}
-                    type="button"
-                    className="text-xs bg-blue-400 hover:bg-blue-500 mt-1 text-white rounded-lg px-1 py-1 border cursor-pointer transition"
-                  >
-                    Reject
-                  </button>
-                )}
-              </li>
+              <div
+                key={appt._id}
+                className="bg-white rounded-xl shadow-md p-5 mb-4 hover:shadow-lg transition-shadow duration-400"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  {/* Left side — appointment details */}
+                  <div>
+                    {/* Name (doctor for patient, patient for doctor) */}
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {user?.role === "patient"
+                        ? appt.doctor.name
+                        : appt.patient.name}
+                    </h3>
+
+                    {/* Date & Time */}
+                    <p className="text-sm text-gray-500">
+                      {new Date(appt.date).toLocaleDateString()} •{" "}
+                      {appt.date.split("T")[1].split(".")[0]}
+                    </p>
+
+                    {/* Email */}
+                    <p className="text-sm mt-1 text-gray-600">
+                      <span className="font-medium">Email:</span>{" "}
+                      {user?.role === "doctor"
+                        ? appt.patient.email
+                        : appt.doctor.email}
+                    </p>
+
+                    {/* Reason */}
+                    <p className="text-sm mt-1 text-gray-600">
+                      <span className="font-medium">Reason:</span> {appt.reason}
+                    </p>
+
+                    {/* Status */}
+                    <p className="text-sm mt-1">
+                      <span className="font-medium">Status:</span>{" "}
+                      <span
+                        className={`font-medium px-2 py-0.5 rounded-full text-xs ${
+                          appt.status === "approved"
+                            ? "bg-green-100 text-green-700"
+                            : appt.status === "pending"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : appt.status === "rejected"
+                            ? "bg-red-100 text-red-700"
+                            : appt.status === "cancelled"
+                            ? "bg-orange-100 text-orange-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}
+                      >
+                        {appt.status}
+                      </span>
+                    </p>
+                  </div>
+
+                  {/* Right side — action buttons */}
+                  <div className="flex flex-wrap gap-2">
+                    {(user?.role === "patient"
+                      ? ["approved", "pending", undefined].includes(
+                          appt?.status
+                        )
+                      : appt.status === "approved") && (
+                      <button
+                        onClick={() => handleCancleButton(appt._id)}
+                        type="button"
+                        className="bg-red-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-red-600 transition"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                    {user?.role === "doctor" && appt.status === "pending" && (
+                      <>
+                        <button
+                          onClick={() => handleApproveButton(appt._id)}
+                          type="button"
+                          className="bg-green-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-green-600 transition"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleRejectButton(appt._id)}
+                          type="button"
+                          className="bg-gray-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-gray-600 transition"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
             ))}
           </ul>
         </>
