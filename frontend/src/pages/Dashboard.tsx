@@ -23,13 +23,22 @@ export const Dashboard = () => {
         </h1>
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-4 mb-8">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer">
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer"
+            onClick={() => navigate("/create-appointment")}
+          >
             Book Appointment
           </button>
-          <button className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 cursor-pointer">
+          <button
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 cursor-pointer"
+            onClick={() => navigate("/profile")}
+          >
             View Profile
           </button>
-          <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 cursor-pointer">
+          <button
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 cursor-pointer"
+            onClick={() => navigate("/upload-report")}
+          >
             Upload Report
           </button>
         </div>
