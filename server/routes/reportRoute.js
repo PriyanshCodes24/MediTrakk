@@ -7,6 +7,7 @@ const {
   getDoctorReports,
   getAdminReports,
   deleteReport,
+  viewReport,
 } = require("../controllers/reportController");
 const { protect, authorizeRole } = require("../middleware/authMiddleware");
 const upload = require("../middleware/multer");
@@ -23,5 +24,8 @@ router.get("/patient", protect, getPatientReports);
 router.get("/doctor", protect, authorizeRole("doctor"), getDoctorReports);
 router.get("/admin", protect, authorizeRole("admin"), getAdminReports);
 router.delete("/:id", protect, deleteReport);
+
+// New route for viewing files
+router.get("/view/:filename", protect, viewReport);
 
 module.exports = router;

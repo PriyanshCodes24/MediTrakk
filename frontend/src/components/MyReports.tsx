@@ -22,6 +22,7 @@ const MyReports = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingDelete, setLoadingDelete] = useState(false);
+  const [viewingFile, setViewingFile] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -60,9 +61,9 @@ const MyReports = () => {
       console.log("Download failed", e);
     }
   };
+
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete the appointment?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this report?")) return;
     try {
       setLoadingDelete(true);
       const token = localStorage.getItem("token");
@@ -83,78 +84,154 @@ const MyReports = () => {
     }
   };
 
+  const handleView = async (fileUrl: string) => {
+    try {
+      setViewingFile(fileUrl);
+      const token = localStorage.getItem("token");
+      const filename = fileUrl.split("/").pop();
+
+      // Fetch the file with authentication
+      const response = await fetch(`${API}/reports/view/${filename}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Get the file as a blob
+      const blob = await response.blob();
+
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(blob);
+
+      // Open in new tab
+      window.open(url, "_blank");
+
+      // Clean up the URL object after a delay
+      // setTimeout(() => {
+      //   window.URL.revokeObjectURL(url);
+      // }, 1000);
+    } catch (e) {
+      console.log("Failed to open report", e);
+      toast.error("Failed to open report");
+    } finally {
+      setViewingFile(null);
+    }
+  };
+
+  const getFileTypeIcon = (fileType: string) => {
+    const type = fileType.toLowerCase();
+    if (type.includes("pdf")) return "📄";
+    if (
+      type.includes("image") ||
+      type.includes("jpg") ||
+      type.includes("jpeg") ||
+      type.includes("png")
+    )
+      return "🖼️";
+    if (
+      type.includes("xls") ||
+      type.includes("sheet") ||
+      type.includes("excel")
+    )
+      return "📊";
+    if (type.includes("doc") || type.includes("word")) return "📝";
+    return "📁";
+  };
+
   return (
-    <div
-      className="overflow-y-auto max-h-[628px]
-    bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl"
-    >
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 ">
-        My Reports({reports.length})
+    <div className="overflow-y-auto max-h-[628px] bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
+      {/* Header */}
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">
+        My Reports ({reports.length})
       </h2>
+
       {loading ? (
         <p className="text-gray-500">Loading...</p>
       ) : reports.length === 0 ? (
-        <p className="text-sm text-gray-500">No Reports Uploaded Yet.</p>
+        <p className="text-gray-600">No Reports Uploaded Yet.</p>
       ) : (
-        <ul className="text-gray-700 space-y-4 text-sm">
-          {reports.map((rep) => (
-            <li key={rep._id} className="border-b pb-4">
-              <p>
-                <strong>Patient:</strong>{" "}
-                <span className="text-gray-700">
-                  {rep.user?.name || "Unknown"}
-                </span>
-              </p>
-              <p>
-                <strong>Name:</strong>{" "}
-                <span className="text-gray-700">{rep.fileName}</span>
-              </p>
-              <p>
-                <strong>URL:</strong>{" "}
-                <span className="text-gray-700">{rep.fileUrl}</span>
-              </p>
-              <p>
-                <strong>Type:</strong>{" "}
-                <span className="text-gray-700">{rep.fileType}</span>
-              </p>
-              <p>
-                <strong>Uploaded:</strong>{" "}
-                <span className="text-gray-700">
-                  {new Date(rep.uploadedAt).toLocaleString()}
-                </span>
-              </p>
-              <p>
-                <strong>View:</strong>{" "}
-                <a
-                  href={`${BASE_URL}${rep.fileUrl}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline text-blue-500"
-                >
-                  Open Report
-                </a>
-              </p>
-              <p>
-                <button
-                  onClick={() => handleDownload(rep.fileUrl, rep.fileName)}
-                  className="bg-blue-400 text-white rounded-lg px-2 py-1 mt-2 cursor-pointer hover:bg-blue-500"
-                >
-                  Download
-                </button>
-                {user?.role === "patient" && (
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(rep._id)}
-                    disabled={loadingDelete}
-                    className="ml-2 bg-blue-400 text-white rounded-lg px-2 py-1 mt-2 cursor-pointer hover:bg-blue-500"
-                  >
-                    {loadingDelete ? "Deleting..." : "Delete"}
-                  </button>
-                )}
-              </p>
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="text-gray-700 space-y-4 text-sm">
+            {reports.map((rep) => (
+              <div
+                key={rep._id}
+                className="bg-white rounded-xl shadow-md p-5 mb-4 hover:shadow-lg transition-shadow duration-400 border border-gray-100"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  {/* Left side — report details */}
+                  <div className="flex-1">
+                    {/* File icon and name */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-2xl">
+                        {getFileTypeIcon(rep.fileType)}
+                      </span>
+                      <h3 className="text-lg font-semibold text-gray-800">
+                        {rep.fileName}
+                      </h3>
+                    </div>
+
+                    {/* Patient/User info */}
+                    <p className="text-sm mt-1 text-gray-600">
+                      <span className="font-medium">Patient:</span>{" "}
+                      {rep?.user?.name || "Unknown"}
+                    </p>
+
+                    {/* File type */}
+                    <p className="text-sm mt-1 text-gray-600">
+                      <span className="font-medium">Type:</span>{" "}
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                        {rep.fileType}
+                      </span>
+                    </p>
+
+                    {/* Upload date */}
+                    <p className="text-sm mt-1 text-gray-600">
+                      <span className="font-medium">Uploaded:</span>{" "}
+                      {new Date(rep.uploadedAt).toLocaleDateString()} •{" "}
+                      {new Date(rep.uploadedAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+
+                  {/* Right side — action buttons */}
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleDownload(rep.fileUrl, rep.fileName)}
+                      className="cursor-pointer bg-blue-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-blue-600 transition"
+                    >
+                      Download
+                    </button>
+
+                    <button
+                      onClick={() => handleView(rep.fileUrl)}
+                      disabled={viewingFile === rep.fileUrl}
+                      className="cursor-pointer bg-green-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {viewingFile === rep.fileUrl ? "Opening..." : "View"}
+                    </button>
+
+                    {user?.role === "patient" && (
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(rep._id)}
+                        disabled={loadingDelete}
+                        className="cursor-pointer bg-red-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {loadingDelete ? "Deleting..." : "Delete"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </ul>
+        </>
       )}
     </div>
   );

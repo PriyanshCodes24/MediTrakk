@@ -242,7 +242,7 @@ export const MyAppointments = () => {
                       <button
                         onClick={() => handleCancleButton(appt._id)}
                         type="button"
-                        className="bg-red-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-red-600 transition"
+                        className="cursor-pointer bg-red-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-red-600 transition"
                       >
                         Cancel
                       </button>
@@ -252,14 +252,14 @@ export const MyAppointments = () => {
                         <button
                           onClick={() => handleApproveButton(appt._id)}
                           type="button"
-                          className="bg-green-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-green-600 transition"
+                          className="cursor-pointer bg-green-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-green-600 transition"
                         >
                           Approve
                         </button>
                         <button
                           onClick={() => handleRejectButton(appt._id)}
                           type="button"
-                          className="bg-gray-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-gray-600 transition"
+                          className="cursor-pointer bg-gray-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-gray-600 transition"
                         >
                           Reject
                         </button>
