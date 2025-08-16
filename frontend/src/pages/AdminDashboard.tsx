@@ -21,9 +21,6 @@ const AdminDashboard = () => {
     );
   }
 
-  let greet = "";
-  if (user.role === "doctor") greet = " Dr. ";
-
   return (
     <div className="h-screen px-4 py-8 bg-gray-100">
       <div className="max-w-6xl mx-auto">

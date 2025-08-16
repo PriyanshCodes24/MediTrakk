@@ -1,8 +1,12 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export const Navbar = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
+  const canGoBack = new Set(["/dashboard", "/admin-dashboard"]);
+  const showBack = canGoBack.has(location.pathname);
+  console.log(location);
   const navigate = useNavigate();
   const logoutHandler = () => {
     if (window.confirm("Are you sure you want to sign out")) {
@@ -12,8 +16,24 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-500 p-4 flex text-white justify-end">
-      <div className="flex gap-4">
+    <nav className="bg-blue-500 p-4 flex items-center text-white">
+      {!showBack && (
+        <button
+          type="button"
+          onClick={() =>
+            window.history.length > 1 ? navigate(-1) : navigate("/")
+          }
+          className=" hover:text-gray-200 hover:underline transition cursor-pointer"
+          aria-label="Go back"
+        >
+          <span className="text-xl leading-none inline-flex mb-1 -ml-1">
+            &#8249;
+          </span>
+          <span> Back</span>
+        </button>
+      )}
+
+      <div className="flex items-center gap-4 ml-auto">
         {/* <Link
           to="/"
           className=" hover:text-gray-200 hover:underline transition"
@@ -23,7 +43,7 @@ export const Navbar = () => {
         {!user && (
           <Link
             to="/login"
-            className="  hover:text-gray-200 hover:underline transition"
+            className=" hover:text-gray-200 hover:underline transition"
           >
             Sign In
           </Link>

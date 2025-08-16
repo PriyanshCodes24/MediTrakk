@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useState, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
+// import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
 const UploadReport = () => {
+  // const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
