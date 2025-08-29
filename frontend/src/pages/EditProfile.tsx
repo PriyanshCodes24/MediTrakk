@@ -12,18 +12,19 @@ const EditProfile = () => {
 
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
 
     if (!name.trim() || !email.trim()) {
-      toast.error("Name and Email both are Required ");
-      return;
+      return; // inline errors will show
     }
 
     try {
-      setLoading(true);
+      setIsSubmitting(true);
       const token = localStorage.getItem("token");
 
       const { data } = await axios.put(
@@ -43,39 +44,92 @@ const EditProfile = () => {
         err?.response?.data?.message || "Update failed. Please try again"
       );
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
+  const showErrors = submitted;
+  const nameError = showErrors && !name.trim();
+  const emailError = showErrors && !email.trim();
   return (
-    <div className="p-4 min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm">
-        <h1 className="text-xl font-bold text-center mb-4">Edit Profile</h1>
+    <div className="min-h-screen flex items-start justify-center bg-gray-50 py-10 px-4">
+      <div className="bg-white w-full max-w-lg rounded-2xl shadow-lg ring-1 ring-black/5 p-6 sm:p-8">
+        <h1 className="text-center text-2xl font-semibold text-gray-900">
+          Edit Profile
+        </h1>
+        <p className="mt-2 text-center text-sm text-gray-500">
+          Update your display name and email address.
+        </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-            placeholder="Name"
-            className="border rounded-lg px-3 py-2 w-full"
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            placeholder="Email"
-            className="border rounded-lg px-3 py-2 w-full"
-          />
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-5 mt-6"
+          noValidate
+        >
+          <label className="block" htmlFor="name">
+            <span className="text-sm font-medium text-gray-700">Name</span>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoComplete="name"
+              disabled={isSubmitting}
+              className={`mt-1 block w-full rounded-md border p-2.5 shadow-sm focus:outline-none ${
+                nameError
+                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              }`}
+              aria-invalid={nameError}
+              aria-describedby={nameError ? "name-error" : undefined}
+            />
+            {nameError && (
+              <p id="name-error" className="mt-1 text-xs text-red-600">
+                Please enter your name.
+              </p>
+            )}
+          </label>
+
+          <label className="block" htmlFor="email">
+            <span className="text-sm font-medium text-gray-700">Email</span>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              disabled={isSubmitting}
+              className={`mt-1 block w-full rounded-md border p-2.5 shadow-sm focus:outline-none ${
+                emailError
+                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              }`}
+              aria-invalid={emailError}
+              aria-describedby={emailError ? "email-error" : undefined}
+            />
+            {emailError && (
+              <p id="email-error" className="mt-1 text-xs text-red-600">
+                Please enter your email.
+              </p>
+            )}
+          </label>
+
           <button
             type="submit"
-            className="bg-blue-500 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-600 transition w-full"
-            disabled={loading}
+            className="inline-flex items-center justify-center bg-blue-600 text-white py-2.5 px-4 rounded-lg cursor-pointer hover:bg-blue-700 w-full transition disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
           >
-            {loading ? "Saving" : "Save"}
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <span
+                  className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+                  aria-hidden="true"
+                ></span>
+                Saving...
+              </span>
+            ) : (
+              "Save"
+            )}
           </button>
         </form>
       </div>

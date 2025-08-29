@@ -22,11 +22,21 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="h-screen px-4 py-8 bg-gray-100">
+    <div className="min-h-screen px-4 py-8 bg-gradient-to-b from-blue-50 to-gray-100">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-center font-bold text-3xl mb-8 text-gray-800">
-          {`Welcome, ${user?.name || "Admin"}`}
-        </h1>
+        {/* Hero */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 mb-8 shadow-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold">
+                {`Welcome, ${user?.name || "Admin"}`}
+              </h1>
+              <p className="mt-1 text-white/80">Admin Dashboard</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Content grid */}
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {/* card-1 */}
           <AllUsers />

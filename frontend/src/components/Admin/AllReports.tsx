@@ -62,7 +62,7 @@ const AllReports = () => {
     }
   };
   return (
-    <div className="overflow-y-auto max-h-[600px] bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
+    <div className="overflow-y-auto max-h-[650px] bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
       <h2 className="font-semibold text-gray-700 text-xl mb-4">
         Uploaded Reports ({reports.length})
       </h2>
