@@ -86,7 +86,7 @@ const CreateAppointment = () => {
   const dateError = showErrors && !date;
   const reasonError = showErrors && !reason;
   return (
-    <div className="min-h-screen bg-gray-50 flex items-start justify-center py-10 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex items-start justify-center py-10 px-4">
       <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-lg ring-1 ring-black/5">
         <h1 className="text-center font-semibold text-2xl text-gray-900">
           Create Appointment

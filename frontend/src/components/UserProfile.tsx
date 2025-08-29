@@ -36,7 +36,7 @@ const UserProfile = () => {
   });
 
   return (
-    <div className=" min-h-screen bg-gray-100 py-10 px-4">
+    <div className=" min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 py-10 px-4">
       <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition ">
         {/* Header */}
         <div className="flex items-center space-x-6 mb-6">
