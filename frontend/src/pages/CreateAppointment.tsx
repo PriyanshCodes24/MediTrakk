@@ -24,7 +24,6 @@ const CreateAppointment = () => {
 
   const handleOption = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectOption(e.target.value);
-    // console.log(selectOption);
   };
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -36,7 +35,6 @@ const CreateAppointment = () => {
           },
         });
         setDoctorsList(data.doctors);
-        // console.log(data.doctors);
       } catch (e) {
         console.log("Failed to fetch doctors-list", e);
         toast.error("Failed to fetch doctors-list");

@@ -53,7 +53,6 @@ const AdminStats = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        // console.log(data);
         setStats(data);
       } catch (e: any) {
         console.log(e);

@@ -32,13 +32,12 @@ const UploadReport = () => {
       const formData = new FormData();
       formData.append("report", file);
 
-      const { data } = await axios.post(`${API}/reports/upload`, formData, {
+      await axios.post(`${API}/reports/upload`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       toast.success("Report uploaded successfully!");
-      console.log(data);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }

@@ -34,7 +34,6 @@ const Register = () => {
       });
       setUser(data.user);
       localStorage.setItem("token", data.token);
-      console.log("Register Response:", data);
       toast.success("Signed up successfully");
       navigate("/dashboard");
     } catch (e: any) {

@@ -8,7 +8,6 @@ export const Navbar = () => {
   const location = useLocation();
   const canGoBack = new Set(["/dashboard", "/admin-dashboard"]);
   const showBack = canGoBack.has(location.pathname);
-  // console.log(location);
   const navigate = useNavigate();
   const logoutHandler = () => {
     if (window.confirm("Are you sure you want to sign out")) {

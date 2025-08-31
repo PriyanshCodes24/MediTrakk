@@ -35,7 +35,6 @@ const MyReports = () => {
           },
         });
         setReports(data.reports);
-        // console.log(data);
       } catch (e) {
         console.log("Failed to fetch reports", e);
       } finally {

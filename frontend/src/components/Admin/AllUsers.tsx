@@ -30,7 +30,6 @@ const AllUsers = () => {
           },
         });
         setUsers(data.users);
-        // console.log(data);
       } catch (e: any) {
         console.log(e);
       } finally {

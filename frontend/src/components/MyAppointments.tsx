@@ -47,7 +47,6 @@ export const MyAppointments = () => {
         });
 
         setAppointments(upcoming);
-        console.log(data);
       } catch (e) {
         console.error("Failed to fetch appointments", e);
       } finally {
