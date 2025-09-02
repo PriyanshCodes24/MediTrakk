@@ -14,7 +14,6 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173", // dev frontend
-      "https://your-frontend-domain.com", // deployed frontend domain (replace later)
     ],
     credentials: true, // if you use cookies / auth headers
   })
