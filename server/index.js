@@ -9,7 +9,16 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // dev frontend
+      "https://your-frontend-domain.com", // deployed frontend domain (replace later)
+    ],
+    credentials: true, // if you use cookies / auth headers
+  })
+);
 app.use(express.json());
 app.use("/api/test", require("./routes/testRoute"));
 app.use("/api", require("./routes/authRoute"));
