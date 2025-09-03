@@ -10,9 +10,20 @@ connectDB();
 const app = express();
 
 // app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://your-frontend.vercel.app", // replace with your actual frontend domain
+];
+
 app.use(
   cors({
-    origin: "*",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
