@@ -9,24 +9,27 @@ connectDB();
 
 const app = express();
 
-// app.use(cors());
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://your-frontend.vercel.app", // replace with your actual frontend domain
+  "https://your-frontend.vercel.app", // Replace with your actual frontend domain
+  // Add your Render frontend URL here if you have one, e.g., "https://meditrakk-frontend.onrender.com"
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg =
+        "The CORS policy for this site does not allow access from the specified Origin.";
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/api/test", require("./routes/testRoute"));
 app.use("/api", require("./routes/authRoute"));
