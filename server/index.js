@@ -11,9 +11,11 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173", // For local development
-  "https://meditrakk.vercel.app", // Example production frontend URL
-  process.env.FRONTEND_URL, // Recommended: Use an environment variable for your production URL
 ];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -31,6 +33,10 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Explicitly handle preflight requests
+app.options("*", cors(corsOptions));
+
 app.use(express.json());
 app.use("/api/test", require("./routes/testRoute"));
 app.use("/api", require("./routes/authRoute"));
