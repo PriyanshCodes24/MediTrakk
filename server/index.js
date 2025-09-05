@@ -38,12 +38,15 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
 app.use(express.json());
+
+// STEP 1: Comment out all routes like this. Deploy to Render. It should succeed.
+// STEP 2: Uncomment one line at a time and deploy again. The one that makes it crash has the error.
 app.use("/api/test", require("./routes/testRoute"));
-app.use("/api", require("./routes/authRoute"));
-app.use("/api/users", require("./routes/userRoute"));
-app.use("/api/appointments", require("./routes/appointmentRoute"));
-app.use("/api/admin", require("./routes/adminRoutes"));
-app.use("/api/reports", require("./routes/reportRoute"));
+// app.use("/api", require("./routes/authRoute"));
+// app.use("/api/users", require("./routes/userRoute"));
+// app.use("/api/appointments", require("./routes/appointmentRoute"));
+// app.use("/api/admin", require("./routes/adminRoutes"));
+// app.use("/api/reports", require("./routes/reportRoute"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Error handling middleware must be last
