@@ -46,7 +46,7 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/reports", require("./routes/reportRoute"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use(require("./middleware/errorMiddleware"));
-
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
+
+app.use(require("./middleware/errorMiddleware"));
