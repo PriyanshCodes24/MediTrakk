@@ -16,6 +16,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import { useEffect } from "react";
 import ChangeRole from "./components/Admin/ChangeRole";
 import UserProfile from "./components/UserProfile";
+import { AnimatePresence } from "framer-motion";
 
 const AppRoutes = () => {
   const { loading } = useAuth();
@@ -34,84 +35,86 @@ const AppRoutes = () => {
     <>
       <link rel="icon" href="/logo" />
       <Navbar />
-      <Routes>
-        {/* <Route path="/" element={<Home />} /> */}
-        <Route path="/" element={<Navigate to="/dashboard" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin-dashboard"
-          element={
-            <RoleProtectedRoute requiredRole="admin">
-              <AdminDashboard />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <UserProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/edit-profile"
-          element={
-            <ProtectedRoute>
-              <EditProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/create-appointment"
-          element={
-            <RoleProtectedRoute requiredRole="patient">
-              <CreateAppointment />
-            </RoleProtectedRoute>
-          }
-        />
-        <Route
-          path="/reports"
-          element={
-            <ProtectedRoute>
-              <MyReports />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/appointments"
-          element={
-            <ProtectedRoute>
-              <MyAppointments />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/upload-report"
-          element={
-            <ProtectedRoute>
-              <UploadReport />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/change-role/:id"
-          element={
-            <RoleProtectedRoute requiredRole="admin">
-              <ChangeRole />
-            </RoleProtectedRoute>
-          }
-        />
-      </Routes>
+      <AnimatePresence mode="wait" initial={false}>
+        <Routes>
+          {/* <Route path="/" element={<Home />} /> */}
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-dashboard"
+            element={
+              <RoleProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/edit-profile"
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-appointment"
+            element={
+              <RoleProtectedRoute requiredRole="patient">
+                <CreateAppointment />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute>
+                <MyReports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/appointments"
+            element={
+              <ProtectedRoute>
+                <MyAppointments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/upload-report"
+            element={
+              <ProtectedRoute>
+                <UploadReport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/change-role/:id"
+            element={
+              <RoleProtectedRoute requiredRole="admin">
+                <ChangeRole />
+              </RoleProtectedRoute>
+            }
+          />
+        </Routes>
+      </AnimatePresence>
       <Toaster position="top-left" reverseOrder={false} />
     </>
   );
