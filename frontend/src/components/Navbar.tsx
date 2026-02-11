@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Navitem from "./Navitem";
 import { useState } from "react";
 
 export const Navbar = () => {
@@ -36,12 +37,6 @@ export const Navbar = () => {
       )}
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center gap-4 ml-auto">
-        {/* <Link
-          to="/"
-          className=" hover:text-gray-200 hover:underline transition"
-        >
-          Home
-        </Link> */}
         {!user && (
           <>
             <Link
@@ -65,6 +60,7 @@ export const Navbar = () => {
           >
             Create-Appoinment
           </Link>
+          // <NavItem label="Create-Appoinment" />
         )}
         {user && (
           <Link
