@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import BackButton from "./BackButton";
 
 type User = {
   name: string;
@@ -38,8 +39,10 @@ const UserProfile = () => {
   return (
     <div className=" min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 py-10 px-4">
       <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition ">
+        <BackButton />
+
         {/* Header */}
-        <div className="flex items-center space-x-6 mb-6">
+        <div className="flex items-center space-x-6 mb-6 mt-8">
           <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-4xl">
             {userInfo?.name?.charAt(0) ?? "?"}
           </div>

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
+import BackButton from "../BackButton";
 
 const API = import.meta.env.VITE_API_URL;
 type User = {
@@ -43,7 +44,7 @@ const ChangeRole = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       toast.success("Role changed successfully");
       navigate(-1);
@@ -56,12 +57,14 @@ const ChangeRole = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-gray-100 px-4">
       <div className="bg-white p-8 rounded-xl shadow-md max-w-md w-full">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+        <BackButton />
+
+        <h2 className="text-center mt-4 text-2xl font-semibold text-gray-800 mb-6">
           Change Role
         </h2>
 
         <div className="space-y-4">
-          <div>
+          <div className="space-y-2">
             <p className="text-sm text-gray-600">
               <strong>Name:</strong> {user?.name}
             </p>
@@ -75,8 +78,8 @@ const ChangeRole = () => {
                   user?.role === "admin"
                     ? "text-red-500"
                     : user?.role === "doctor"
-                    ? "text-blue-500"
-                    : "text-green-500"
+                      ? "text-blue-500"
+                      : "text-green-500"
                 }`}
               >
                 {user?.role}

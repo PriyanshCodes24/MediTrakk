@@ -3,17 +3,15 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import Navitem from "./Navitem";
 import { BsCalendarPlus } from "react-icons/bs";
-import { FaUserAlt } from "react-icons/fa";
+import { FaUserAlt, FaUserInjured } from "react-icons/fa";
 import { FiGrid, FiLogOut, FiUpload } from "react-icons/fi";
 import { motion } from "framer-motion";
-import BackButton from "./BackButton";
+import { FaUserDoctor, FaUserShield } from "react-icons/fa6";
 
 export const Navbar = () => {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const canGoBack = new Set(["/dashboard", "/admin-dashboard"]);
-  const showBack = canGoBack.has(location.pathname);
   const navigate = useNavigate();
   const logoutHandler = () => {
     setOpen(false);
@@ -22,11 +20,28 @@ export const Navbar = () => {
       navigate("/login");
     }
   };
+  const capitalize = (role: string) => {
+    const cap = role.charAt(0).toUpperCase() + role.slice(1);
+    return cap;
+  };
 
   return (
     <motion.nav className=" flex items-center justify-end bg-blue-500 p-4 text-white">
-      {/* Back Button */}
-      {!showBack && <BackButton />}
+      {/* {!showBack && <BackButton />} */}
+      {user && (
+        <div className={`flex mr-auto gap-1 items-center `}>
+          {user?.role === "admin" ? (
+            <FaUserShield size={18} title="admin" className="text-sm" />
+          ) : user?.role === "doctor" ? (
+            <FaUserDoctor size={18} title="doctor" className="text-sm" />
+          ) : (
+            <FaUserInjured size={18} title="patient" className="text-sm" />
+          )}
+          <div className="sm:block hidden text-sm text-gray-300">
+            {capitalize(user?.role) || ""}
+          </div>
+        </div>
+      )}
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center gap-4 ml-auto">
         {user?.role === "patient" && (

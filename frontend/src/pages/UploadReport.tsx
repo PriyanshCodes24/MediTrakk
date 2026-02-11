@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
+import BackButton from "../components/BackButton";
 // import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
@@ -120,7 +121,8 @@ const UploadReport = () => {
       <div className="max-w-md w-full">
         {/* Header Card */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-6 text-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <BackButton />
+          <div className="mt-4 w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-2xl">📤</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-800 mb-2">
@@ -140,8 +142,8 @@ const UploadReport = () => {
                 dragActive
                   ? "border-blue-400 bg-blue-50"
                   : file
-                  ? "border-green-400 bg-green-50"
-                  : "border-gray-300 bg-gray-50 hover:border-gray-400"
+                    ? "border-green-400 bg-green-50"
+                    : "border-gray-300 bg-gray-50 hover:border-gray-400"
               }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}

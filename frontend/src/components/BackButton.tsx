@@ -8,7 +8,7 @@ const BackButton = () => {
       onClick={() => {
         navigate(-1);
       }}
-      className="flex text-gray-300 hover:text-white items-center text-sm hover:underline cursor-pointer"
+      className="flex text-gray-500 items-center text-sm hover:underline cursor-pointer"
     >
       <IoIosArrowBack className="mr-1" />
       Back

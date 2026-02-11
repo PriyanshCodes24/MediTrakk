@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import BackButton from "../components/BackButton";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -34,14 +35,14 @@ const EditProfile = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       setUser(data.user);
       toast.success("Profile updated successfully");
       navigate("/dashboard");
     } catch (err: any) {
       toast.error(
-        err?.response?.data?.message || "Update failed. Please try again"
+        err?.response?.data?.message || "Update failed. Please try again",
       );
     } finally {
       setIsSubmitting(false);
@@ -53,7 +54,8 @@ const EditProfile = () => {
   return (
     <div className="min-h-screen flex items-start justify-center bg-gray-50 py-10 px-4">
       <div className="bg-white w-full max-w-lg rounded-2xl shadow-lg ring-1 ring-black/5 p-6 sm:p-8">
-        <h1 className="text-center text-2xl font-semibold text-gray-900">
+        <BackButton />
+        <h1 className="mt-4 text-center text-2xl font-semibold text-gray-900">
           Edit Profile
         </h1>
         <p className="mt-2 text-center text-sm text-gray-500">

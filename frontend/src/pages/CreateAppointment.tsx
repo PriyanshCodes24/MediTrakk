@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../components/BackButton";
 
 type Doctor = {
   _id: string;
@@ -68,7 +69,7 @@ const CreateAppointment = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       toast.success("Appointment created successfully");
       navigate("/dashboard");
@@ -86,7 +87,8 @@ const CreateAppointment = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex items-start justify-center py-10 px-4">
       <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-lg ring-1 ring-black/5">
-        <h1 className="text-center font-semibold text-2xl text-gray-900">
+        <BackButton />
+        <h1 className="mt-4 text-center font-semibold text-2xl text-gray-900">
           Create Appointment
         </h1>
         <p className="mt-2 text-center text-sm text-gray-500">

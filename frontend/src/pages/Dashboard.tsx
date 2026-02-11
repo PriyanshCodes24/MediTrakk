@@ -14,7 +14,7 @@ export const Dashboard = () => {
   // Greeting line based on role
   const greetPrefix = useMemo(
     () => (user?.role === "doctor" ? " Dr. " : " "),
-    [user?.role]
+    [user?.role],
   );
 
   // Local stats state
@@ -45,7 +45,7 @@ export const Dashboard = () => {
         const appointments = appointmentsRes?.data?.appointments || [];
         const now = new Date();
         const upcoming = appointments.filter(
-          (a: any) => new Date(a.date) >= now
+          (a: any) => new Date(a.date) >= now,
         );
         const pending = appointments.filter((a: any) => a.status === "pending");
         setUpcomingCount(upcoming.length);
@@ -98,32 +98,37 @@ export const Dashboard = () => {
           {/* Main column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Quick actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <button
-                type="button"
-                onClick={() => navigate("/create-appointment")}
-                className="cursor-pointer group rounded-xl bg-white p-4 shadow-md ring-1 ring-gray-200 hover:shadow-lg transition flex items-center gap-3"
-              >
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                  {/* calendar icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="h-5 w-5"
-                  >
-                    <path d="M6.75 3a.75.75 0 0 1 .75.75V5h9V3.75a.75.75 0 1 1 1.5 0V5h.75A2.25 2.25 0 0 1 21 7.25v11.5A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.25A2.25 2.25 0 0 1 5.25 5H6V3.75A.75.75 0 0 1 6.75 3ZM4.5 9v9.75c0 .414.336.75.75.75h13.5a.75.75 0 0 0 .75-.75V9H4.5Z" />
-                  </svg>
-                </span>
-                <span className="text-left">
-                  <span className="block text-sm font-semibold text-gray-800">
-                    Book Appointment
+            <div
+              className={`grid grid-cols-1 
+              ${user.role === "patient" ? "sm:grid-cols-3" : "sm:grid-cols-2"} gap-4`}
+            >
+              {user.role === "patient" && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/create-appointment")}
+                  className="cursor-pointer group rounded-xl bg-white p-4 shadow-md ring-1 ring-gray-200 hover:shadow-lg transition flex items-center gap-3"
+                >
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                    {/* calendar icon */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="h-5 w-5"
+                    >
+                      <path d="M6.75 3a.75.75 0 0 1 .75.75V5h9V3.75a.75.75 0 1 1 1.5 0V5h.75A2.25 2.25 0 0 1 21 7.25v11.5A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.25A2.25 2.25 0 0 1 5.25 5H6V3.75A.75.75 0 0 1 6.75 3ZM4.5 9v9.75c0 .414.336.75.75.75h13.5a.75.75 0 0 0 .75-.75V9H4.5Z" />
+                    </svg>
                   </span>
-                  <span className="block text-xs text-gray-500">
-                    Schedule with your doctor
+                  <span className="text-left">
+                    <span className="block text-sm font-semibold text-gray-800">
+                      Book Appointment
+                    </span>
+                    <span className="block text-xs text-gray-500">
+                      Schedule with your doctor
+                    </span>
                   </span>
-                </span>
-              </button>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => navigate("/upload-report")}
