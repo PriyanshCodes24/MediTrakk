@@ -34,7 +34,7 @@
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Frontend:**  React, TypeScript, Tailwind CSS
 - **Backend:** Node.js, Express.js
@@ -73,7 +73,7 @@ VITE_API_URL=http://localhost:5000/api
 ```
 
 
-🚀 Setup Instructions
+Setup Instructions
 
 1. Clone the repo
 ```bash
@@ -123,7 +123,7 @@ Features Implemented
 
 ⏳ Pagination for reports
 
-🤝 Contributing
+Contributing
 Pull requests are welcome! For major changes, open an issue first.
 
 👤 **Author**  
