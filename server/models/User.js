@@ -18,13 +18,18 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+    phone: {
+      type: Number,
+      minlength: 10,
+      trim: true,
+    },
     role: {
       type: String,
       enum: ["patient", "doctor", "admin"],
       default: "patient",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("User", userSchema);

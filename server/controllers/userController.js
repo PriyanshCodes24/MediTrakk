@@ -15,7 +15,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
 const getDoctorList = asyncHandler(async (req, res) => {
   const doctors = await User.find({ role: "doctor" }).select(
-    "-__v -password -role"
+    "-__v -password -role",
   );
   if (doctors.length === 0) {
     return res.status(404).json({ message: "Doctors not found" });
@@ -37,7 +37,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);
-  const { name, email } = req.body;
+  const { name, email, phone } = req.body;
 
   if (email && email !== user.email) {
     const emailExists = await User.findOne({ email });
@@ -49,6 +49,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   if (!user) return res.status(404).json({ message: "User doesn't exist" });
   user.name = name || user.name;
   user.email = email || user.email;
+  user.phone = phone || user.phone;
   const updatedUser = await user.save();
   return res
     .status(200)

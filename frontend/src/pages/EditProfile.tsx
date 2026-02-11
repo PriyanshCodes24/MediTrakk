@@ -13,8 +13,13 @@ const EditProfile = () => {
 
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [phone, setPhone] = useState(user?.phone || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const showErrors = submitted;
+  const nameError = showErrors && !name.trim();
+  const emailError = showErrors && !email.trim();
+  const phoneError = showErrors && !phone;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +35,7 @@ const EditProfile = () => {
 
       const { data } = await axios.put(
         `${API}/users/update`,
-        { name, email },
+        { name, email, phone },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,9 +53,7 @@ const EditProfile = () => {
       setIsSubmitting(false);
     }
   };
-  const showErrors = submitted;
-  const nameError = showErrors && !name.trim();
-  const emailError = showErrors && !email.trim();
+
   return (
     <div className="min-h-screen flex items-start justify-center bg-gray-50 py-10 px-4">
       <div className="bg-white w-full max-w-lg rounded-2xl shadow-lg ring-1 ring-black/5 p-6 sm:p-8">
@@ -68,7 +71,7 @@ const EditProfile = () => {
           noValidate
         >
           <label className="block" htmlFor="name">
-            <span className="text-sm font-medium text-gray-700">Name</span>
+            <span className="text-sm font-medium text-gray-700">Name:</span>
             <input
               id="name"
               type="text"
@@ -92,7 +95,7 @@ const EditProfile = () => {
           </label>
 
           <label className="block" htmlFor="email">
-            <span className="text-sm font-medium text-gray-700">Email</span>
+            <span className="text-sm font-medium text-gray-700">Email:</span>
             <input
               id="email"
               type="email"
@@ -111,6 +114,29 @@ const EditProfile = () => {
             {emailError && (
               <p id="email-error" className="mt-1 text-xs text-red-600">
                 Please enter your email.
+              </p>
+            )}
+          </label>
+          <label className="block" htmlFor="phone">
+            <span className="text-sm font-medium text-gray-700">Phone NO:</span>
+            <input
+              id="phone"
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              autoComplete="phone"
+              disabled={isSubmitting}
+              className={`mt-1 block w-full rounded-md border p-2.5 shadow-sm focus:outline-none ${
+                emailError
+                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              }`}
+              aria-invalid={phoneError}
+              aria-describedby={phoneError ? "phone-error" : undefined}
+            />
+            {phoneError && (
+              <p id="phone-error" className="mt-1 text-xs text-red-600">
+                Please enter your phone number.
               </p>
             )}
           </label>
