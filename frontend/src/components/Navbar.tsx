@@ -37,13 +37,13 @@ export const Navbar = () => {
           ) : (
             <FaUserInjured size={18} title="patient" className="text-sm" />
           )}
-          <div className="sm:block hidden text-sm text-gray-300">
+          <div className="md:block hidden text-sm text-gray-300">
             {capitalize(user?.role) || ""}
           </div>
         </div>
       )}
       {/* Desktop Menu */}
-      <div className="hidden md:flex items-center gap-4 ml-auto">
+      <div className="hidden sm:flex items-center gap-4 ml-auto">
         {user?.role === "patient" && (
           <Navitem
             label="Create-Appoinment"
@@ -135,7 +135,7 @@ export const Navbar = () => {
       {/* Mobile Hamburger */}
       <button
         onClick={() => setOpen(!open)}
-        className="md:hidden ml-auto relative w-9 h-9 flex items-center justify-center group cursor-pointer"
+        className="sm:hidden ml-auto relative w-9 h-9 flex items-center justify-center group cursor-pointer"
       >
         <span
           className={`absolute h-0.5 w-6 bg-white transition-all duration-300 ${
@@ -164,14 +164,14 @@ export const Navbar = () => {
                 to="/login"
                 className="py-2 px-3 rounded-md hover:bg-white/10 transition"
               >
-                Sign In
+                Login
               </Link>
               <Link
                 onClick={() => setOpen(false)}
                 to="/register"
                 className="py-2 px-3 rounded-md hover:bg-white/10 transition"
               >
-                Sign Up
+                Register
               </Link>
             </>
           )}

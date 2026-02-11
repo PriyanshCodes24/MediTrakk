@@ -21,7 +21,7 @@ const EditProfile = () => {
     setSubmitted(true);
 
     if (!name.trim() || !email.trim()) {
-      return; // inline errors will show
+      return;
     }
 
     try {

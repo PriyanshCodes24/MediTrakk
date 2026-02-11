@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -50,31 +51,63 @@ export const Login = () => {
     }
   };
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-gray-100">
-      <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-sm">
-        <h1 className="text-center text-xl font-bold mb-4">Welcome Back</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-gray-100 px-4">
+      <div className="w-full max-w-md shadow-lg p-6 rounded-lg bg-white border border-gray-200">
+        <h1 className="text-center text-2xl font-bold">Welcome Back</h1>
+        <p className="text-sm text-center text-gray-500 mt-1">
+          Log in to continue to your account
+        </p>
 
-        <form className="flex flex-col gap-4 mt-4" onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="example@gmail.com"
-            className="border rounded-lg px-3 py-2 w-full"
-            onChange={handleEmail}
-          />
-          <input
-            type="password"
-            placeholder="password"
-            className="border rounded-lg px-3 py-2 w-full"
-            onChange={handlePassword}
-          />
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <label
+              className="text-sm font-medium text-gray-700"
+              htmlFor="email"
+            >
+              Email:
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              placeholder="example@gmail.com"
+              className="w-full focus:outline-none focus:ring-1 focus:ring-[#22333B] rounded-md p-2 text-sm mt-1 border border-gray-300 to-gray-900 placeholder-gray-400"
+              onChange={handleEmail}
+            />
+          </div>
+
+          <div>
+            <label
+              className="text-sm font-medium text-gray-700"
+              htmlFor="password"
+            >
+              Password:
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="password"
+              className="w-full focus:outline-none focus:ring-1 focus:ring-[#22333B] rounded-md p-2 text-sm mt-1 border border-gray-300 to-gray-900 placeholder-gray-400"
+              onChange={handlePassword}
+            />
+          </div>
           <button
             type="submit"
-            className="bg-blue-500 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-600 transition w-full"
+            className="w-full font-semibold mt-6 mb-4 flex justify-center items-center bg-blue-500 text-white py-2 rounded-md cursor-pointer hover:bg-blue-600 transition shadow-lg"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Sign In"}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        <div className="text-center">
+          <Link
+            className="text-gray-500 hover:text-gray-700 text-sm hover:underline underline-offset-4"
+            to="/register"
+          >
+            Don't have an account? Register
+          </Link>
+        </div>
       </div>
     </div>
   );
