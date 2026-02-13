@@ -44,7 +44,7 @@ const EditProfile = () => {
       );
       setUser(data.user);
       toast.success("Profile updated successfully");
-      navigate("/dashboard");
+      navigate("/profile");
     } catch (err: any) {
       toast.error(
         err?.response?.data?.message || "Update failed. Please try again",
