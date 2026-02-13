@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 
 const Register = () => {
   const [name, setName] = useState("");
+  const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const API = import.meta.env.VITE_API_URL;
@@ -15,6 +16,9 @@ const Register = () => {
 
   const handleName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
+  };
+  const handleContact = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContact(e.target.value);
   };
 
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +34,7 @@ const Register = () => {
     try {
       const { data } = await axios.post(`${API}/register`, {
         name: name.trim(),
+        contact: contact.trim(),
         email: email.trim(),
         password: password.trim(),
       });
@@ -71,6 +76,22 @@ const Register = () => {
               placeholder="John Doe"
               className="w-full focus:outline-none focus:ring-1 focus:ring-[#22333B] rounded-md p-2 text-sm mt-1 border border-gray-300 to-gray-900 placeholder-gray-400"
               onChange={handleName}
+            />
+          </div>
+          <div>
+            <label
+              className="text-sm font-medium text-gray-700"
+              htmlFor="contact"
+            >
+              Contact:
+            </label>
+
+            <input
+              id="contact"
+              type="text"
+              placeholder="99999 99999"
+              className="w-full focus:outline-none focus:ring-1 focus:ring-[#22333B] rounded-md p-2 text-sm mt-1 border border-gray-300 to-gray-900 placeholder-gray-400"
+              onChange={handleContact}
             />
           </div>
           <div>

@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, contact, password } = req.body;
   const role = "patient";
   if (role === "admin") {
     return res.status(403).json({ message: "You cannot register as admin" });
@@ -17,10 +17,11 @@ const registerUser = asyncHandler(async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, salt);
 
   const newUser = new User({
-    name: name,
-    email: email,
+    name,
+    email,
+    contact,
     password: hashedPassword,
-    role: role,
+    role,
   });
 
   await newUser.save();
@@ -28,12 +29,13 @@ const registerUser = asyncHandler(async (req, res) => {
   const token = jwt.sign(
     { id: newUser._id, role: newUser.role },
     process.env.JWT_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "7d" },
   );
 
   const safeUser = {
     id: newUser._id,
     name: newUser.name,
+    contact: newUser.contact,
     email: newUser.email,
     role: newUser.role,
   };
@@ -61,7 +63,7 @@ const loginUser = asyncHandler(async (req, res) => {
       role: user.role,
     },
     process.env.JWT_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "7d" },
   );
 
   return res.status(200).json({
@@ -70,6 +72,7 @@ const loginUser = asyncHandler(async (req, res) => {
     user: {
       id: user._id,
       name: user.name,
+      contact: user.contact,
       email: user.email,
       role: user.role,
     },

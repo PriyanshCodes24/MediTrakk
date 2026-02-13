@@ -37,7 +37,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);
-  const { name, email, phone } = req.body;
+  const { name, email, contact } = req.body;
 
   if (email && email !== user.email) {
     const emailExists = await User.findOne({ email });
@@ -49,7 +49,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   if (!user) return res.status(404).json({ message: "User doesn't exist" });
   user.name = name || user.name;
   user.email = email || user.email;
-  user.phone = phone || user.phone;
+  user.contact = contact || user.contact;
   const updatedUser = await user.save();
   return res
     .status(200)

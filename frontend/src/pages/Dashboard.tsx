@@ -11,24 +11,20 @@ export const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Greeting line based on role
   const greetPrefix = useMemo(
     () => (user?.role === "doctor" ? " Dr. " : " "),
     [user?.role],
   );
 
-  // Local stats state
   const [loadingStats, setLoadingStats] = useState(true);
   const [upcomingCount, setUpcomingCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
   const [reportsCount, setReportsCount] = useState(0);
 
-  // Redirect admins away from user dashboard
   useEffect(() => {
     if (user?.role === "admin") navigate("/admin-dashboard");
   }, [user?.role, navigate]);
 
-  // Fetch lightweight stats for header cards
   useEffect(() => {
     const fetchStats = async () => {
       if (!user?.role) return;
@@ -54,7 +50,6 @@ export const Dashboard = () => {
         const reports = reportsRes?.data?.reports || [];
         setReportsCount(reports.length);
       } catch (e) {
-        // best-effort; keep UI resilient
         setUpcomingCount(0);
         setPendingCount(0);
         setReportsCount(0);

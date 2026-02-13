@@ -13,13 +13,13 @@ const EditProfile = () => {
 
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
-  const [phone, setPhone] = useState(user?.phone || "");
+  const [contact, setContact] = useState(user?.contact || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const showErrors = submitted;
   const nameError = showErrors && !name.trim();
   const emailError = showErrors && !email.trim();
-  const phoneError = showErrors && !phone;
+  const contactError = showErrors && !contact;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +35,7 @@ const EditProfile = () => {
 
       const { data } = await axios.put(
         `${API}/users/update`,
-        { name, email, phone },
+        { name, email, contact },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -117,26 +117,26 @@ const EditProfile = () => {
               </p>
             )}
           </label>
-          <label className="block" htmlFor="phone">
-            <span className="text-sm font-medium text-gray-700">Phone NO:</span>
+          <label className="block" htmlFor="contact">
+            <span className="text-sm font-medium text-gray-700">Contact:</span>
             <input
-              id="phone"
+              id="contact"
               type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              autoComplete="phone"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              autoComplete="contact"
               disabled={isSubmitting}
               className={`mt-1 block w-full rounded-md border p-2.5 shadow-sm focus:outline-none ${
                 emailError
                   ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                   : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               }`}
-              aria-invalid={phoneError}
-              aria-describedby={phoneError ? "phone-error" : undefined}
+              aria-invalid={contactError}
+              aria-describedby={contactError ? "contact-error" : undefined}
             />
-            {phoneError && (
-              <p id="phone-error" className="mt-1 text-xs text-red-600">
-                Please enter your phone number.
+            {contactError && (
+              <p id="contact-error" className="mt-1 text-xs text-red-600">
+                Please enter your contact number.
               </p>
             )}
           </label>

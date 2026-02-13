@@ -9,7 +9,7 @@ type User = {
   name: string;
   email: string;
   role: string;
-  phone: number;
+  contact: number;
   createdAt: string;
 };
 
@@ -75,12 +75,12 @@ const UserProfile = () => {
         {/* Details */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-xs text-gray-500">Phone</p>
+            <p className="text-xs text-gray-500">Contact</p>
             {loading ? (
               <Skeleton className="h-4 w-20" />
             ) : (
               <p className="text-gray-800 font-medium">
-                {userInfo?.phone || "Not Provided"}
+                {userInfo?.contact || "Not Provided"}
               </p>
             )}
           </div>

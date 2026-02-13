@@ -68,12 +68,12 @@ export const MyAppointments = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       setAppointments((prev) =>
         prev.map((appt) =>
-          appt._id === id ? { ...appt, status: "cancelled" } : appt
-        )
+          appt._id === id ? { ...appt, status: "cancelled" } : appt,
+        ),
       );
       toast.success("Appointment cancelled successfully");
     } catch (e: any) {
@@ -93,12 +93,12 @@ export const MyAppointments = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       setAppointments((prev) =>
         prev.map((appt) =>
-          appt._id === id ? { ...appt, status: "approved" } : appt
-        )
+          appt._id === id ? { ...appt, status: "approved" } : appt,
+        ),
       );
       toast.success("Appointment approved successfully");
     } catch (e: any) {
@@ -118,12 +118,12 @@ export const MyAppointments = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       setAppointments((prev) =>
         prev.map((appt) =>
-          appt._id === id ? { ...appt, status: "rejected" } : appt
-        )
+          appt._id === id ? { ...appt, status: "rejected" } : appt,
+        ),
       );
       toast.success("Appointment rejected successfully");
     } catch (e: any) {
@@ -139,7 +139,7 @@ export const MyAppointments = () => {
         | "cancelled"
         | "pending"
         | "completed"
-        | "rejected"
+        | "rejected",
     );
   };
 
@@ -184,20 +184,17 @@ export const MyAppointments = () => {
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   {/* Left side — appointment details */}
                   <div>
-                    {/* Name (doctor for patient, patient for doctor) */}
                     <h3 className="text-lg font-semibold text-gray-800">
                       {user?.role === "patient"
                         ? appt.doctor.name
                         : appt.patient.name}
                     </h3>
 
-                    {/* Date & Time */}
                     <p className="text-sm text-gray-500">
                       {new Date(appt.date).toLocaleDateString()} •{" "}
                       {appt.date.split("T")[1].split(".")[0]}
                     </p>
 
-                    {/* Email */}
                     <p className="text-sm mt-1 text-gray-600">
                       <span className="font-medium">Email:</span>{" "}
                       {user?.role === "doctor"
@@ -205,12 +202,10 @@ export const MyAppointments = () => {
                         : appt.doctor.email}
                     </p>
 
-                    {/* Reason */}
                     <p className="text-sm mt-1 text-gray-600">
                       <span className="font-medium">Reason:</span> {appt.reason}
                     </p>
 
-                    {/* Status */}
                     <p className="text-sm mt-1">
                       <span className="font-medium">Status:</span>{" "}
                       <span
@@ -218,12 +213,12 @@ export const MyAppointments = () => {
                           appt.status === "approved"
                             ? "bg-green-100 text-green-700"
                             : appt.status === "pending"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : appt.status === "rejected"
-                            ? "bg-red-100 text-red-700"
-                            : appt.status === "cancelled"
-                            ? "bg-orange-100 text-orange-700"
-                            : "bg-blue-100 text-blue-700"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : appt.status === "rejected"
+                                ? "bg-red-100 text-red-700"
+                                : appt.status === "cancelled"
+                                  ? "bg-orange-100 text-orange-700"
+                                  : "bg-blue-100 text-blue-700"
                         }`}
                       >
                         {appt.status}
@@ -235,7 +230,7 @@ export const MyAppointments = () => {
                   <div className="flex flex-wrap gap-2">
                     {(user?.role === "patient"
                       ? ["approved", "pending", undefined].includes(
-                          appt?.status
+                          appt?.status,
                         )
                       : appt.status === "approved") && (
                       <button
