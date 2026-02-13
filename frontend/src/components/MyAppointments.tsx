@@ -186,8 +186,8 @@ export const MyAppointments = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800">
                       {user?.role === "patient"
-                        ? appt.doctor.name
-                        : appt.patient.name}
+                        ? appt?.doctor?.name
+                        : appt?.patient?.name}
                     </h3>
 
                     <p className="text-sm text-gray-500">
@@ -198,8 +198,8 @@ export const MyAppointments = () => {
                     <p className="text-sm mt-1 text-gray-600">
                       <span className="font-medium">Email:</span>{" "}
                       {user?.role === "doctor"
-                        ? appt.patient.email
-                        : appt.doctor.email}
+                        ? appt?.patient?.email
+                        : appt?.doctor?.email}
                     </p>
 
                     <p className="text-sm mt-1 text-gray-600">

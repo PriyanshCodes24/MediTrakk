@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
+const Appointment = require("../models/Appointment");
+const DoctorPatient = require("../models/DoctorPatient");
 
 const getUserProfile = asyncHandler(async (req, res) => {
   if (!req.user || !req.user.id) {
@@ -55,12 +57,22 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     .status(200)
     .json({ message: "User Updated Successfully", user: updatedUser });
 });
+
 const deleteUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
+  const userId = req.params.id;
+  const user = await User.findById(userId);
   if (!mongoose.Types.ObjectId.isValid(user))
     return res.status(400).json({ message: "Invalid user ID" });
 
   if (!user) return res.status(404).json({ message: "User not found" });
+
+  await Appointment.deleteMany({
+    $or: [{ doctor: userId }, { patient: userId }],
+  });
+
+  await DoctorPatient.deleteMany({
+    $or: [{ doctor: userId }, { patient: userId }],
+  });
 
   await user.deleteOne();
 

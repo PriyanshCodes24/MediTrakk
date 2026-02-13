@@ -63,7 +63,7 @@ const AdminStats = () => {
     fetchStats();
   }, []);
   return (
-    <div className="max-h-[650px] bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
+    <div className="max-h-[650px] overflow-scroll bg-white rounded-xl p-6 shadow-md hover:shadow-lg ring-1 ring-gray-200 transition max-w-2xl">
       <h2 className="font-semibold text-gray-800 text-xl mb-4">Admin Stats</h2>
       {loading ? (
         <p>Loading...</p>

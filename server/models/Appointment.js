@@ -13,13 +13,9 @@ const appointmentSchema = new mongoose.Schema(
       required: true,
     },
     date: {
-      type: Date,
+      type: Date, 
       required: true,
     },
-    // time: {
-    //   type: String,
-    //   required: true,
-    // },
     reason: {
       type: String,
       trim: true,
@@ -30,12 +26,12 @@ const appointmentSchema = new mongoose.Schema(
       default: "pending",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 appointmentSchema.index(
   { patient: 1, doctor: 1, date: 1, time: 1 },
-  { unique: true }
+  { unique: true },
 );
 
 module.exports = mongoose.model("Appointment", appointmentSchema);
