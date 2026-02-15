@@ -15,13 +15,14 @@ const API = import.meta.env.VITE_API_URL;
 const CreateAppointment = () => {
   const [selectOption, setSelectOption] = useState("");
   const [doctorsList, setDoctorsList] = useState<Doctor[]>([]);
-  const [date, setDate] = useState("");
   const [reason, setReason] = useState("");
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [isFetchingDoctors, setIsFetchingDoctors] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
 
   const handleOption = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectOption(e.target.value);
@@ -45,32 +46,27 @@ const CreateAppointment = () => {
     };
     fetchDoctors();
   }, []);
-  const getMinLocalDateTime = () => {
-    const now = new Date();
-    const tzOffset = now.getTimezoneOffset();
-    const local = new Date(now.getTime() - tzOffset * 60000);
-    return local.toISOString().slice(0, 16);
-  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitted(true);
 
-    if (!selectOption || !date || !reason) {
+    if (!selectOption || !selectedDate || !selectedTime || !reason) {
       toast.error("Please fill in all the fields");
       return;
     }
 
     try {
       setIsSubmitting(true);
-      await axios.post(
-        `${API}/appointments`,
-        { doctor: selectOption, date, reason },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const combinedDateTime = new Date(`${selectedDate} ${selectedTime}`);
+      const payload = { doctor: selectOption, date: combinedDateTime, reason };
+      console.log(payload);
+
+      await axios.post(`${API}/appointments`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       toast.success("Appointment created successfully");
       navigate("/dashboard");
     } catch (e: any) {
@@ -80,9 +76,40 @@ const CreateAppointment = () => {
       setIsSubmitting(false);
     }
   };
+
+  const generateTimeSlots = (selectedDate: string) => {
+    const slots: string[] = [];
+
+    const startHour = 9;
+    const endHour = 20;
+    const interval = 30;
+
+    const today = new Date();
+    const isToday =
+      new Date(selectedDate).toDateString() === today.toDateString();
+
+    for (let hour = startHour; hour < endHour; hour++) {
+      for (let min = 0; min < 60; min += interval) {
+        const slot = new Date(selectedDate);
+        slot.setHours(hour, min, 0, 0);
+
+        if (isToday && slot <= today) continue;
+
+        const formatted = slot.toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+        });
+
+        slots.push(formatted);
+      }
+    }
+    return slots;
+  };
+
   const showErrors = submitted;
   const doctorError = showErrors && !selectOption;
-  const dateError = showErrors && !date;
+  const dateError = showErrors && !selectedDate;
+  const timeError = showErrors && !selectedTime;
   const reasonError = showErrors && !reason;
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex items-start justify-center py-10 px-4">
@@ -100,6 +127,7 @@ const CreateAppointment = () => {
           onSubmit={handleSubmit}
           noValidate
         >
+          {/* doctor list */}
           <label className="block" htmlFor="doctor">
             <span className="text-sm font-medium text-gray-700">Doctor</span>
             <select
@@ -138,34 +166,59 @@ const CreateAppointment = () => {
               </p>
             )}
           </label>
-          <label className="block" htmlFor="dateTime">
-            <span className="text-sm font-medium text-gray-700">
-              Date & Time
-            </span>
+          {/* date */}
+          <label className="block" htmlFor="date">
+            <span className="text-sm font-medium text-gray-700">Date</span>
             <input
-              id="dateTime"
-              type="datetime-local"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              min={getMinLocalDateTime()}
-              disabled={isSubmitting}
+              id="date"
+              type="date"
+              min={new Date().toISOString().split("T")[0]}
+              value={selectedDate}
+              onChange={(e) => {
+                setSelectedDate(e.target.value);
+                setSelectedTime("");
+              }}
               className={`mt-1 block w-full rounded-md border p-2.5 shadow-sm focus:outline-none ${
                 dateError
                   ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                   : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               }`}
-              aria-invalid={dateError}
-              aria-describedby={dateError ? "date-error" : "date-help"}
             />
-            <p id="date-help" className="mt-1 text-xs text-gray-500">
-              Times are in your local timezone.
-            </p>
             {dateError && (
-              <p id="date-error" className="mt-1 text-xs text-red-600">
-                Please select a valid date and time.
+              <p id="doctor-error" className="mt-1 text-xs text-red-600">
+                Please select a date.
               </p>
             )}
           </label>
+          {/* time */}
+          <label className="block" htmlFor="time">
+            <span className="text-sm font-medium text-gray-700">Time</span>
+            <select
+              id="time"
+              value={selectedTime}
+              onChange={(e) => setSelectedTime(e.target.value)}
+              disabled={!selectedDate}
+              className={`mt-1 block w-full rounded-md border p-2.5 shadow-sm focus:outline-none ${
+                timeError
+                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              }`}
+            >
+              <option value="">Select Time</option>
+              {generateTimeSlots(selectedDate).map((slot, i) => (
+                <option key={i} value={slot}>
+                  {slot}
+                </option>
+              ))}
+            </select>
+            {timeError && (
+              <p id="doctor-error" className="mt-1 text-xs text-red-600">
+                Please select a time.
+              </p>
+            )}
+          </label>
+
+          {/* reason */}
           <label className="block" htmlFor="reason">
             <span className="text-sm font-medium text-gray-700">Reason</span>
             <textarea
@@ -202,6 +255,7 @@ const CreateAppointment = () => {
               </p>
             )}
           </label>
+          {/* button */}
           <button
             type="submit"
             className="inline-flex items-center justify-center bg-blue-600 text-white py-2.5 px-4 rounded-lg cursor-pointer hover:bg-blue-700 w-full transition disabled:opacity-70 disabled:cursor-not-allowed"

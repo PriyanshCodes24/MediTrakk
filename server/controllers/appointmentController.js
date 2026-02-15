@@ -34,7 +34,7 @@ const createAppointment = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Invalid date" });
   }
 
-  if (appointmentDate < new Date()) {
+  if (appointmentDate <= new Date()) {
     return res
       .status(400)
       .json({ message: "Cannot create appointment in past" });
