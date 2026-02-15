@@ -12,7 +12,7 @@ const updateStatus = async () => {
         status: "approved",
         date: { $lt: now },
       },
-      { $set: { status: "completed" } }
+      { $set: { status: "completed" } },
     );
     console.log(`${updated.modifiedCount} appointments marked as completed.`);
 
@@ -32,6 +32,12 @@ const createAppointment = asyncHandler(async (req, res) => {
   const appointmentDate = new Date(date);
   if (isNaN(appointmentDate.getTime())) {
     return res.status(400).json({ message: "Invalid date" });
+  }
+
+  if (appointmentDate < new Date()) {
+    return res
+      .status(400)
+      .json({ message: "Cannot create appointment in past" });
   }
 
   if (!mongoose.Types.ObjectId.isValid(doctor)) {
@@ -71,7 +77,7 @@ const createAppointment = asyncHandler(async (req, res) => {
   await DoctorPatient.updateOne(
     { doctor, patient },
     {},
-    { upsert: true, setDefaultsOnInsert: true }
+    { upsert: true, setDefaultsOnInsert: true },
   );
   return res.status(201).json({ message: "Appointment created", appointment });
 });

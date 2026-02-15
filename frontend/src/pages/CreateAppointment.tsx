@@ -148,7 +148,6 @@ const CreateAppointment = () => {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               min={getMinLocalDateTime()}
-              // min={new Date().toISOString()}
               disabled={isSubmitting}
               className={`mt-1 block w-full rounded-md border p-2.5 shadow-sm focus:outline-none ${
                 dateError
