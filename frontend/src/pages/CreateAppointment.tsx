@@ -1,8 +1,8 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton";
+import api from "../Utils/axios";
 
 type Doctor = {
   _id: string;
@@ -10,13 +10,10 @@ type Doctor = {
   email: string;
 };
 
-const API = import.meta.env.VITE_API_URL;
-
 const CreateAppointment = () => {
   const [selectOption, setSelectOption] = useState("");
   const [doctorsList, setDoctorsList] = useState<Doctor[]>([]);
   const [reason, setReason] = useState("");
-  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [isFetchingDoctors, setIsFetchingDoctors] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,21 +21,22 @@ const CreateAppointment = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
 
-  const handleOption = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectOption(e.target.value);
+  const fieldUi = (error: boolean = false, className: string = "") => {
+    const baseClasses =
+      "mt-1 block w-full rounded-md border p-2.5 shadow-sm focus:outline-none";
+    const errorClasses = error
+      ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+      : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500";
+    return `${baseClasses} ${errorClasses} ${className}`;
   };
   useEffect(() => {
     const fetchDoctors = async () => {
       setIsFetchingDoctors(true);
       try {
-        const { data } = await axios.get(`${API}/users/doctors`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await api.get(`/users/doctors`);
         setDoctorsList(data.doctors);
       } catch (e) {
-        console.log("Failed to fetch doctors-list", e);
+        console.error("Failed to fetch doctors-list", e);
         toast.error("Failed to fetch doctors-list");
       } finally {
         setIsFetchingDoctors(false);
@@ -58,19 +56,18 @@ const CreateAppointment = () => {
 
     try {
       setIsSubmitting(true);
-      const combinedDateTime = new Date(`${selectedDate} ${selectedTime}`);
-      const payload = { doctor: selectOption, date: combinedDateTime, reason };
-      console.log(payload);
+      const [hours, mins] = selectedTime.split(":");
+      const parsedDate = new Date(selectedDate);
 
-      await axios.post(`${API}/appointments`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      parsedDate.setHours(Number(hours), Number(mins), 0, 0);
+
+      const payload = { doctor: selectOption, date: parsedDate, reason };
+
+      await api.post(`/appointments`, payload);
       toast.success("Appointment created successfully");
       navigate("/dashboard");
     } catch (e: any) {
-      console.log("Failed to to create appointment", e);
+      console.error("Failed to to create appointment", e);
       toast.error(e?.response?.data?.message || "Failed to create appointment");
     } finally {
       setIsSubmitting(false);
@@ -96,7 +93,7 @@ const CreateAppointment = () => {
         if (isToday && slot <= today) continue;
 
         const formatted = slot.toLocaleTimeString([], {
-          hour: "numeric",
+          hour: "2-digit",
           minute: "2-digit",
         });
 
@@ -111,6 +108,11 @@ const CreateAppointment = () => {
   const dateError = showErrors && !selectedDate;
   const timeError = showErrors && !selectedTime;
   const reasonError = showErrors && !reason;
+  const errorMsg = (type: string) => (
+    <p id={`${type}-error`} className="mt-1 text-xs text-red-600">
+      Please select a {type}.
+    </p>
+  );
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex items-start justify-center py-10 px-4">
       <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-lg ring-1 ring-black/5">
@@ -133,15 +135,9 @@ const CreateAppointment = () => {
             <select
               id="doctor"
               value={selectOption}
-              onChange={handleOption}
+              onChange={(e) => setSelectOption(e.target.value)}
               disabled={isFetchingDoctors || isSubmitting}
-              className={`mt-1 block w-full rounded-md border bg-white p-2.5 shadow-sm focus:outline-none ${
-                doctorError
-                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                  : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
-              aria-invalid={doctorError}
-              aria-describedby={doctorError ? "doctor-error" : undefined}
+              className={fieldUi(doctorError)}
             >
               <option value="" disabled={isFetchingDoctors}>
                 {isFetchingDoctors ? "Loading doctors..." : "Select a doctor"}
@@ -160,11 +156,7 @@ const CreateAppointment = () => {
                   </option>
                 ))}
             </select>
-            {doctorError && (
-              <p id="doctor-error" className="mt-1 text-xs text-red-600">
-                Please select a doctor.
-              </p>
-            )}
+            {doctorError && errorMsg("doctor")}
           </label>
           {/* date */}
           <label className="block" htmlFor="date">
@@ -178,17 +170,9 @@ const CreateAppointment = () => {
                 setSelectedDate(e.target.value);
                 setSelectedTime("");
               }}
-              className={`mt-1 block w-full rounded-md border p-2.5 shadow-sm focus:outline-none ${
-                dateError
-                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                  : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
+              className={fieldUi(dateError)}
             />
-            {dateError && (
-              <p id="doctor-error" className="mt-1 text-xs text-red-600">
-                Please select a date.
-              </p>
-            )}
+            {dateError && errorMsg("date")}
           </label>
           {/* time */}
           <label className="block" htmlFor="time">
@@ -198,11 +182,7 @@ const CreateAppointment = () => {
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
               disabled={!selectedDate}
-              className={`mt-1 block w-full rounded-md border p-2.5 shadow-sm focus:outline-none ${
-                timeError
-                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                  : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
+              className={fieldUi(timeError)}
             >
               <option value="">Select Time</option>
               {generateTimeSlots(selectedDate).map((slot, i) => (
@@ -210,12 +190,11 @@ const CreateAppointment = () => {
                   {slot}
                 </option>
               ))}
+              {generateTimeSlots(selectedDate).length === 0 && (
+                <option disabled>No slots available</option>
+              )}
             </select>
-            {timeError && (
-              <p id="doctor-error" className="mt-1 text-xs text-red-600">
-                Please select a time.
-              </p>
-            )}
+            {timeError && errorMsg("time")}
           </label>
 
           {/* reason */}
@@ -229,13 +208,7 @@ const CreateAppointment = () => {
               rows={3}
               maxLength={300}
               disabled={isSubmitting}
-              className={`mt-1 block w-full rounded-md border p-2.5 shadow-sm resize-y focus:outline-none ${
-                reasonError
-                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                  : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }`}
-              aria-invalid={reasonError}
-              aria-describedby={reasonError ? "reason-error" : "reason-help"}
+              className={fieldUi(reasonError, "resize-y")}
             />
             <div className="mt-1 flex items-center justify-between">
               <p id="reason-help" className="text-xs text-gray-500">
@@ -249,11 +222,7 @@ const CreateAppointment = () => {
                 {reason.length}/300
               </p>
             </div>
-            {reasonError && (
-              <p id="reason-error" className="mt-1 text-xs text-red-600">
-                Please provide a reason.
-              </p>
-            )}
+            {reasonError && errorMsg("reason")}
           </label>
           {/* button */}
           <button
