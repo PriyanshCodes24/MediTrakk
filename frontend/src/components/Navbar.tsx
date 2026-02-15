@@ -27,7 +27,6 @@ export const Navbar = () => {
 
   return (
     <motion.nav className=" flex items-center justify-end bg-blue-500 p-4 text-white">
-      {/* {!showBack && <BackButton />} */}
       {user && (
         <div className={`flex mr-auto gap-1 items-center `}>
           {user?.role === "admin" ? (

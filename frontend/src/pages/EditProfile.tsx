@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import toast from "react-hot-toast";
 import BackButton from "../components/BackButton";
-
-const API = import.meta.env.VITE_API_URL;
+import api from "../Utils/axios";
 
 const EditProfile = () => {
   const { user, setUser } = useAuth();
@@ -31,17 +29,8 @@ const EditProfile = () => {
 
     try {
       setIsSubmitting(true);
-      const token = localStorage.getItem("token");
 
-      const { data } = await axios.put(
-        `${API}/users/update`,
-        { name, email, contact },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const { data } = await api.put(`/users/update`, { name, email, contact });
       setUser(data.user);
       toast.success("Profile updated successfully");
       navigate("/profile");

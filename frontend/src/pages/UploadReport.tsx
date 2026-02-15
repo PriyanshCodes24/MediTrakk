@@ -1,13 +1,9 @@
-import axios from "axios";
 import { useState, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
 import BackButton from "../components/BackButton";
-// import { useNavigate } from "react-router-dom";
-
-const API = import.meta.env.VITE_API_URL;
+import api from "../Utils/axios";
 
 const UploadReport = () => {
-  // const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -28,16 +24,11 @@ const UploadReport = () => {
 
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
 
       const formData = new FormData();
       formData.append("report", file);
 
-      await axios.post(`${API}/reports/upload`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.post(`/reports/upload`, formData);
       toast.success("Report uploaded successfully!");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";

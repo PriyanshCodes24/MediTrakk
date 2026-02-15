@@ -1,10 +1,9 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "../BackButton";
+import api from "../../Utils/axios";
 
-const API = import.meta.env.VITE_API_URL;
 type User = {
   name: string;
   email: string;
@@ -15,21 +14,16 @@ const ChangeRole = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [user, setUser] = useState<User>();
-  const token = localStorage.getItem("token");
 
   const [newRole, setNewRole] = useState("patient");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await axios.get(`${API}/admin/user/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await api.get(`/admin/user/${id}`);
         setUser(data.user);
       } catch (e: any) {
-        console.log(e);
+        console.error(e);
       }
     };
     fetchData();
@@ -37,20 +31,12 @@ const ChangeRole = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.patch(
-        `${API}/admin/${id}/change-role`,
-        { role: newRole },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      await api.patch(`/admin/${id}/change-role`, { role: newRole });
       toast.success("Role changed successfully");
       navigate(-1);
     } catch (e: any) {
       toast.error(e.response.data.message || "Role could not be changed");
-      console.log(e);
+      console.error(e);
     }
   };
 

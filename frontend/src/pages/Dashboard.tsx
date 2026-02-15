@@ -3,9 +3,7 @@ import MyReports from "../components/MyReports";
 import MyAppointments from "../components/MyAppointments";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-const API = import.meta.env.VITE_API_URL;
+import api from "../Utils/axios";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
@@ -30,12 +28,10 @@ export const Dashboard = () => {
       if (!user?.role) return;
       try {
         setLoadingStats(true);
-        const token = localStorage.getItem("token");
-        const headers = { Authorization: `Bearer ${token}` };
 
         const [appointmentsRes, reportsRes] = await Promise.all([
-          axios.get(`${API}/appointments/${user.role}`, { headers }),
-          axios.get(`${API}/reports/${user.role}`, { headers }),
+          api.get(`/appointments/${user.role}`),
+          api.get(`/reports/${user.role}`),
         ]);
 
         const appointments = appointmentsRes?.data?.appointments || [];

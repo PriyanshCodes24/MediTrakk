@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import toast from "react-hot-toast";
 import BackButton from "./BackButton";
 import Skeleton from "./Skeleton";
+import api from "../Utils/axios";
 
 type User = {
   name: string;
@@ -12,8 +12,6 @@ type User = {
   contact: number;
   createdAt: string;
 };
-
-const API = import.meta.env.VITE_API_URL;
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -24,18 +22,13 @@ const UserProfile = () => {
     async function fetchUser() {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
-        const { data } = await axios.get(`${API}/users/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await api.get(`/users/me`);
         setUserInfo(data?.user);
       } catch (error: any) {
         toast.error(
           error?.response?.data?.message || "Failed to load profile.",
         );
-        console.log(error);
+        console.error(error);
       } finally {
         setLoading(false);
       }

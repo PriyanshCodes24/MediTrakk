@@ -1,8 +1,6 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
-const API = import.meta.env.VITE_API_URL;
+import api from "../../Utils/axios";
 
 type Report = {
   _id: string;
@@ -20,20 +18,15 @@ const AllReports = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(`${API}/reports/admin`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await api.get(`/reports/admin`);
         setReports(data.reports);
       } catch (e: any) {
-        console.log(e);
+        console.error(e);
       } finally {
         setLoading(false);
       }
@@ -45,17 +38,13 @@ const AllReports = () => {
       if (!window.confirm("Are you sure you want to delete the report?"))
         return;
       setLoadingDelete(true);
-      await axios.delete(`${API}/reports/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.delete(`/reports/${id}`);
 
       setReports((prev) => prev.filter((rep) => rep._id !== id));
 
       toast.success("Report deleted successfully");
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
       toast.error("Report could not be deleted");
     } finally {
       setLoadingDelete(false);

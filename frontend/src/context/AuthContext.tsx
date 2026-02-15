@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   createContext,
   useContext,
@@ -6,6 +5,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import api from "../Utils/axios";
 
 type AuthContextType = {
   user: any;
@@ -15,7 +15,6 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
-const API = import.meta.env.VITE_API_URL;
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(null);
@@ -29,11 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       try {
-        const { data } = await axios.get(`${API}/users/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await api.get(`/users/me`);
         setUser(data.user);
       } catch (e) {
         console.error("Invalid User token or session Expired");

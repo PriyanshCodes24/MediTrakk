@@ -1,7 +1,7 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import api from "../../Utils/axios";
 
 type User = {
   _id: string;
@@ -10,28 +10,20 @@ type User = {
   role: string;
 };
 
-const API = import.meta.env.VITE_API_URL;
-
 const AllUsers = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoadingUsers(true);
-        const token = localStorage.getItem("token");
-        const { data } = await axios.get(`${API}/users/all`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await api.get(`/users/all`);
         setUsers(data.users);
       } catch (e: any) {
-        console.log(e);
+        console.error(e);
       } finally {
         setLoadingUsers(false);
       }
@@ -43,17 +35,13 @@ const AllUsers = () => {
       if (!window.confirm("Are you sure you want to delete the report?"))
         return;
       setLoadingDelete(true);
-      await axios.delete(`${API}/users/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.delete(`/users/${id}`);
 
       setUsers((objs) => objs.filter((obj) => obj._id !== id));
 
       toast.success("User deleted successfully");
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
       toast.error("User could not be deleted");
     } finally {
       setLoadingDelete(false);
@@ -88,8 +76,8 @@ const AllUsers = () => {
                     user.role === "admin"
                       ? " text-red-500"
                       : user.role === "doctor"
-                      ? "text-blue-500"
-                      : "text-green-500"
+                        ? "text-blue-500"
+                        : "text-green-500"
                   } `}
                 >
                   {user.role}

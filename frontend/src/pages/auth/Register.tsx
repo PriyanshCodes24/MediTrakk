@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import api from "../../Utils/axios";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
@@ -32,7 +31,7 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(`${API}/register`, {
+      const { data } = await api.post(`/register`, {
         name: name.trim(),
         contact: contact.trim(),
         email: email.trim(),
@@ -43,7 +42,7 @@ const Register = () => {
       toast.success("Signed up successfully");
       navigate("/dashboard");
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
 
       const errData = e?.response?.data;
       if (errData.errors && Array.isArray(errData.errors)) {

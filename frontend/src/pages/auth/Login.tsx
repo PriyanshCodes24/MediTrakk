@@ -1,11 +1,9 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-
-const API = import.meta.env.VITE_API_URL;
+import api from "../../Utils/axios";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -26,7 +24,7 @@ export const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const { data } = await axios.post(`${API}/login`, {
+      const { data } = await api.post(`/login`, {
         email: email.trim(),
         password: password.trim(),
       });
@@ -36,7 +34,7 @@ export const Login = () => {
       if (data.user?.role === "admin") navigate("/admin-dashboard");
       else navigate("/dashboard");
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       const errData = error?.response?.data;
 
       if (errData.errors && Array.isArray(errData.errors)) {

@@ -1,7 +1,5 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-
-const API = import.meta.env.VITE_API_URL;
+import api from "../../Utils/axios";
 
 type stats = {
   users: number;
@@ -47,15 +45,10 @@ const AdminStats = () => {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
-        const { data } = await axios.get(`${API}/admin/stats`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await api.get(`/admin/stats`);
         setStats(data);
       } catch (e: any) {
-        console.log(e);
+        console.error(e);
       } finally {
         setLoading(false);
       }

@@ -1,7 +1,7 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import api from "../Utils/axios";
 
 const API = import.meta.env.VITE_API_URL;
 const BASE_URL = API.replace("/api", "");
@@ -28,15 +28,10 @@ const MyReports = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const { data } = await axios.get(`${API}/reports/${user?.role}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await api.get(`/reports/${user?.role}`);
         setReports(data.reports);
       } catch (e) {
-        console.log("Failed to fetch reports", e);
+        console.error("Failed to fetch reports", e);
       } finally {
         setLoading(false);
       }
@@ -57,7 +52,7 @@ const MyReports = () => {
       link.click();
       link.remove();
     } catch (e) {
-      console.log("Download failed", e);
+      console.error("Download failed", e);
     }
   };
 
@@ -65,18 +60,12 @@ const MyReports = () => {
     if (!window.confirm("Are you sure you want to delete this report?")) return;
     try {
       setLoadingDelete(true);
-      const token = localStorage.getItem("token");
-      const { data } = await axios.delete(`${API}/reports/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(data);
+      await api.delete(`/reports/${id}`);
       setReports((prev) => prev.filter((rep) => rep._id !== id));
       toast.success("Report deleted successfully");
     } catch (e: any) {
       toast.error(
-        e?.response?.data?.message || "Report could not be deleted: "
+        e?.response?.data?.message || "Report could not be deleted: ",
       );
     } finally {
       setLoadingDelete(false);
@@ -89,7 +78,6 @@ const MyReports = () => {
       const token = localStorage.getItem("token");
       const filename = fileUrl.split("/").pop();
 
-      // Fetch the file with authentication
       const response = await fetch(`${API}/reports/view/${filename}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -100,21 +88,13 @@ const MyReports = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Get the file as a blob
       const blob = await response.blob();
 
-      // Create a URL for the blob
       const url = window.URL.createObjectURL(blob);
 
-      // Open in new tab
       window.open(url, "_blank");
-
-      // Clean up the URL object after a delay
-      // setTimeout(() => {
-      //   window.URL.revokeObjectURL(url);
-      // }, 1000);
     } catch (e) {
-      console.log("Failed to open report", e);
+      console.error("Failed to open report", e);
       toast.error("Failed to open report");
     } finally {
       setViewingFile(null);

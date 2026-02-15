@@ -1,7 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
+import api from "../Utils/axios";
 
 type Appointment = {
   _id: string;
@@ -18,8 +18,6 @@ type Appointment = {
   };
 };
 
-const API = import.meta.env.VITE_API_URL;
-
 export const MyAppointments = () => {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -31,12 +29,7 @@ export const MyAppointments = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const { data } = await axios.get(`${API}/appointments/${user.role}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const { data } = await api.get(`/appointments/${user.role}`);
         const upcoming = data.appointments.filter((appt: Appointment) => {
           const apptDate = new Date(appt.date);
           const now = new Date();
@@ -60,16 +53,7 @@ export const MyAppointments = () => {
     if (!window.confirm("Are you sure you want to cancel the appointment?"))
       return;
     try {
-      const token = localStorage.getItem("token");
-      await axios.patch(
-        `${API}/appointments/${id}/cancel`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      await api.patch(`/appointments/${id}/cancel`, {});
       setAppointments((prev) =>
         prev.map((appt) =>
           appt._id === id ? { ...appt, status: "cancelled" } : appt,
@@ -77,7 +61,7 @@ export const MyAppointments = () => {
       );
       toast.success("Appointment cancelled successfully");
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
       toast.error(`Appointment couldn't be cancelled: ${e}`);
     }
   };
@@ -85,16 +69,7 @@ export const MyAppointments = () => {
     if (!window.confirm("Are you sure you want to cancel the appointment?"))
       return;
     try {
-      const token = localStorage.getItem("token");
-      await axios.patch(
-        `${API}/appointments/${id}/approve`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      await api.patch(`/appointments/${id}/approve`, {});
       setAppointments((prev) =>
         prev.map((appt) =>
           appt._id === id ? { ...appt, status: "approved" } : appt,
@@ -102,7 +77,7 @@ export const MyAppointments = () => {
       );
       toast.success("Appointment approved successfully");
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
       toast.error(`Appointment couldn't be approved`);
     }
   };
@@ -110,16 +85,7 @@ export const MyAppointments = () => {
     if (!window.confirm("Are you sure you want to reject the appointment?"))
       return;
     try {
-      const token = localStorage.getItem("token");
-      await axios.patch(
-        `${API}/appointments/${id}/reject`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      await api.patch(`/appointments/${id}/reject`, {});
       setAppointments((prev) =>
         prev.map((appt) =>
           appt._id === id ? { ...appt, status: "rejected" } : appt,
@@ -127,7 +93,7 @@ export const MyAppointments = () => {
       );
       toast.success("Appointment rejected successfully");
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
       toast.error(`Appointment couldn't be rejected`);
     }
   };
