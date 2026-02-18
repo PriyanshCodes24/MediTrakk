@@ -11,15 +11,19 @@ type Doctor = {
 };
 
 const CreateAppointment = () => {
-  const [selectOption, setSelectOption] = useState("");
+  const [selectedDoctor, setSelectedDoctor] = useState("");
   const [doctorsList, setDoctorsList] = useState<Doctor[]>([]);
   const [reason, setReason] = useState("");
   const navigate = useNavigate();
   const [isFetchingDoctors, setIsFetchingDoctors] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [selectedTime, setSelectedTime] = useState("");
+  const [slotCounts, setSlotCounts] = useState<Record<string, number>>({});
+  const maxPerSlot = 3;
 
   const fieldUi = (error: boolean = false, className: string = "") => {
     const baseClasses =
@@ -45,11 +49,28 @@ const CreateAppointment = () => {
     fetchDoctors();
   }, []);
 
+  useEffect(() => {
+    if (!selectedDoctor || !selectedDate) {
+      setSlotCounts({});
+      return;
+    }
+
+    const fetchAvailability = async () => {
+      const { data } = await api.get(
+        `/appointments/availability?doctor=${selectedDoctor}&date=${selectedDate}`,
+      );
+
+      setSlotCounts(data.slotCounts);
+    };
+
+    fetchAvailability();
+  }, [selectedDate, selectedDoctor]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitted(true);
 
-    if (!selectOption || !selectedDate || !selectedTime || !reason) {
+    if (!selectedDoctor || !selectedDate || !selectedTime || !reason) {
       toast.error("Please fill in all the fields");
       return;
     }
@@ -61,7 +82,7 @@ const CreateAppointment = () => {
 
       parsedDate.setHours(Number(hours), Number(mins), 0, 0);
 
-      const payload = { doctor: selectOption, date: parsedDate, reason };
+      const payload = { doctor: selectedDoctor, date: parsedDate, reason };
 
       await api.post(`/appointments`, payload);
       toast.success("Appointment created successfully");
@@ -75,6 +96,7 @@ const CreateAppointment = () => {
   };
 
   const generateTimeSlots = (selectedDate: string) => {
+    if (!selectedDate) return [];
     const slots: string[] = [];
 
     const startHour = 9;
@@ -82,8 +104,8 @@ const CreateAppointment = () => {
     const interval = 30;
 
     const today = new Date();
-    const isToday =
-      new Date(selectedDate).toDateString() === today.toDateString();
+    const selected = new Date(selectedDate);
+    const isToday = selected.toDateString() === today.toDateString();
 
     for (let hour = startHour; hour < endHour; hour++) {
       for (let min = 0; min < 60; min += interval) {
@@ -95,6 +117,7 @@ const CreateAppointment = () => {
         const formatted = slot.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
+          hour12: false,
         });
 
         slots.push(formatted);
@@ -104,7 +127,7 @@ const CreateAppointment = () => {
   };
 
   const showErrors = submitted;
-  const doctorError = showErrors && !selectOption;
+  const doctorError = showErrors && !selectedDoctor;
   const dateError = showErrors && !selectedDate;
   const timeError = showErrors && !selectedTime;
   const reasonError = showErrors && !reason;
@@ -134,8 +157,8 @@ const CreateAppointment = () => {
             <span className="text-sm font-medium text-gray-700">Doctor</span>
             <select
               id="doctor"
-              value={selectOption}
-              onChange={(e) => setSelectOption(e.target.value)}
+              value={selectedDoctor}
+              onChange={(e) => setSelectedDoctor(e.target.value)}
               disabled={isFetchingDoctors || isSubmitting}
               className={fieldUi(doctorError)}
             >
@@ -181,15 +204,20 @@ const CreateAppointment = () => {
               id="time"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              disabled={!selectedDate}
+              disabled={!selectedDate || !selectedDoctor}
               className={fieldUi(timeError)}
             >
               <option value="">Select Time</option>
-              {generateTimeSlots(selectedDate).map((slot, i) => (
-                <option key={i} value={slot}>
-                  {slot}
-                </option>
-              ))}
+              {generateTimeSlots(selectedDate).map((slot) => {
+                const count = slotCounts[slot] || 0;
+                const isFull = count >= maxPerSlot;
+
+                return (
+                  <option key={slot} value={slot} disabled={isFull}>
+                    {slot} {isFull ? "(Full)" : ""}
+                  </option>
+                );
+              })}
               {generateTimeSlots(selectedDate).length === 0 && (
                 <option disabled>No slots available</option>
               )}

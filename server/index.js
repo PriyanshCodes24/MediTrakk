@@ -19,7 +19,6 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/reports", require("./routes/reportRoute"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Error handling middleware must be last
 app.use(require("./middleware/errorMiddleware"));
 
 const PORT = process.env.PORT || 5000;

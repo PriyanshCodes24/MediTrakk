@@ -14,13 +14,11 @@ const updateStatus = async () => {
       },
       { $set: { status: "completed" } },
     );
-    console.log(`${updated.modifiedCount} appointments marked as completed.`);
 
     const deleted = await Appointment.deleteMany({
       status: { $in: ["rejected", "cancelled"] },
       date: { $lt: now },
     });
-    console.log(`${deleted.modifiedCount} appointments marked as completed.`);
   } catch (error) {
     console.error("Status update failed:", error.message);
   }
@@ -34,7 +32,10 @@ const createAppointment = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Invalid date" });
   }
 
-  if (appointmentDate <= new Date()) {
+  const now = new Date();
+  now.setHours(0, 0);
+
+  if (appointmentDate.getTime() <= now.getTime()) {
     return res
       .status(400)
       .json({ message: "Cannot create appointment in past" });
@@ -50,23 +51,31 @@ const createAppointment = asyncHandler(async (req, res) => {
   if (!doctorExists)
     return res.status(404).json({ message: "Doctor not found" });
 
-  const slotStart = new Date(appointmentDate);
-  const slotEnd = new Date(appointmentDate);
-  slotStart.setMinutes(slotStart.getMinutes() - 15);
-  slotEnd.setMinutes(slotEnd.getMinutes() + 15);
+  const MAX_APPOINTMENTS_PER_SLOT = 3;
 
-  const alreadyBooked = await Appointment.findOne({
+  const minutes = appointmentDate.getMinutes();
+  appointmentDate.setMinutes(minutes < 30 ? 0 : 30, 0, 0);
+
+  const slotStart = new Date(appointmentDate);
+
+  const slotEnd = new Date(slotStart);
+  slotEnd.setMinutes(slotEnd.getMinutes() + 30);
+
+  const count = await Appointment.countDocuments({
     doctor,
     date: {
       $gte: slotStart,
       $lt: slotEnd,
     },
+    status: {
+      $in: ["pending", "approved"],
+    },
   });
-  if (alreadyBooked) {
-    return res
-      .status(400)
-      .json({ message: "Doctor already has an appointment at this time" });
+
+  if (count >= MAX_APPOINTMENTS_PER_SLOT) {
+    return res.status(400).json({ message: "This time slot is fully booked" });
   }
+
   const patient = req.user.id;
   const appointment = await Appointment.create({
     patient,
@@ -166,6 +175,41 @@ const cancelAppointment = asyncHandler(async (req, res) => {
     .json({ message: "Appointment canceled successfully", appointment });
 });
 
+const getAvailability = async (req, res) => {
+  const { date, doctor } = req.query;
+
+  const startDate = new Date(date);
+  startDate.setHours(0, 0, 0, 0);
+
+  const endDate = new Date(date);
+  endDate.setHours(23, 59, 59, 999);
+
+  const appointments = await Appointment.find({
+    doctor,
+    date: {
+      $gte: startDate,
+      $lt: endDate,
+    },
+    status: { $in: ["pending", "approved"] },
+  });
+
+  const slotCounts = {};
+
+  appointments.forEach((appt) => {
+    const d = appt.date;
+
+    const time = d.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+
+    slotCounts[time] = (slotCounts[time] || 0) + 1;
+  });
+
+  res.json({ slotCounts });
+};
+
 const updateAppointmentStatus = (newStatus) =>
   asyncHandler(async (req, res) => {
     const user = req.user.id;
@@ -203,4 +247,5 @@ module.exports = {
   getPatientAppointments,
   getAllAppointments,
   cancelAppointment,
+  getAvailability,
 };

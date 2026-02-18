@@ -8,6 +8,7 @@ const {
   getPatientAppointments,
   getAllAppointments,
   cancelAppointment,
+  getAvailability,
 } = require("../controllers/appointmentController");
 const { body } = require("express-validator");
 const validateRequest = require("../middleware/validateRequest");
@@ -32,35 +33,36 @@ router.post(
       .withMessage("Reason must be a string under 200 characters"),
   ],
   validateRequest,
-  createAppointment
+  createAppointment,
 );
 router.get("/", protect, authorizeRole("admin"), getAllAppointments);
 router.get("/doctor", protect, authorizeRole("doctor"), getDoctorAppointments);
+router.get("/availability", protect, getAvailability);
 router.get(
   "/patient",
   protect,
   authorizeRole("patient"),
-  getPatientAppointments
+  getPatientAppointments,
 );
 
 router.patch(
   "/:id/cancel",
   protect,
   authorizeRole("patient", "doctor", "admin"),
-  cancelAppointment
+  cancelAppointment,
 );
 
 router.patch(
   "/:id/approve",
   protect,
   authorizeRole("doctor"),
-  updateAppointmentStatus("approved")
+  updateAppointmentStatus("approved"),
 );
 router.patch(
   "/:id/reject",
   protect,
   authorizeRole("doctor"),
-  updateAppointmentStatus("rejected")
+  updateAppointmentStatus("rejected"),
 );
 
 module.exports = router;
