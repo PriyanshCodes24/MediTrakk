@@ -158,7 +158,11 @@ export const MyAppointments = () => {
 
                     <p className="text-sm text-gray-500">
                       {new Date(appt.date).toLocaleDateString()} •{" "}
-                      {appt.date.split("T")[1].split(".")[0]}
+                      {new Date(appt.date).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })}
                     </p>
 
                     <p className="text-sm mt-1 text-gray-600">
