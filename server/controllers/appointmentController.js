@@ -7,7 +7,7 @@ const DoctorPatient = require("../models/DoctorPatient");
 const updateStatus = async () => {
   const now = new Date();
   try {
-    const updated = await Appointment.updateMany(
+    await Appointment.updateMany(
       {
         status: "approved",
         date: { $lt: now },
@@ -15,7 +15,7 @@ const updateStatus = async () => {
       { $set: { status: "completed" } },
     );
 
-    const deleted = await Appointment.deleteMany({
+    await Appointment.deleteMany({
       status: { $in: ["rejected", "cancelled"] },
       date: { $lt: now },
     });
@@ -51,6 +51,19 @@ const createAppointment = asyncHandler(async (req, res) => {
   if (!doctorExists)
     return res.status(404).json({ message: "Doctor not found" });
 
+  const appointmentExists = await Appointment.findOne({
+    patient: req.user.id,
+    doctor,
+    date: appointmentDate,
+    status: { $in: ["pending", "approved"] },
+  });
+
+  if (appointmentExists) {
+    return res.status(400).json({
+      message: "You already have an appointment at this time  with this doctor",
+    });
+  }
+
   const MAX_APPOINTMENTS_PER_SLOT = 3;
 
   const minutes = appointmentDate.getMinutes();
@@ -83,6 +96,7 @@ const createAppointment = asyncHandler(async (req, res) => {
     date: appointmentDate,
     reason,
   });
+
   await DoctorPatient.updateOne(
     { doctor, patient },
     {},
