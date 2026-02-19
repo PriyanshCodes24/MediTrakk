@@ -41,7 +41,7 @@ const ChangeRole = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-gray-100 px-4">
+    <div className="h-screen max-h-[90vh] flex items-center justify-center bg-gradient-to-b from-blue-50 to-gray-100 px-4">
       <div className="bg-white p-8 rounded-xl shadow-md max-w-md w-full">
         <BackButton />
 

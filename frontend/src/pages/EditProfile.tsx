@@ -44,7 +44,7 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-start justify-center bg-gray-50 py-10 px-4">
+    <div className="h-screen max-h-[90vh] flex items-start justify-center bg-gray-50 py-10 px-4">
       <div className="bg-white w-full max-w-lg rounded-2xl shadow-lg ring-1 ring-black/5 p-6 sm:p-8">
         <BackButton />
         <h1 className="mt-4 text-center text-2xl font-semibold text-gray-900">
