@@ -7,7 +7,6 @@ import { Navbar } from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 import EditProfile from "./pages/EditProfile";
 import Register from "./pages/auth/Register";
-// import Home from "./pages/Home";
 import CreateAppointment from "./pages/CreateAppointment";
 import MyReports from "./components/MyReports";
 import UploadReport from "./pages/UploadReport";
@@ -115,7 +114,14 @@ const AppRoutes = () => {
           />
         </Routes>
       </AnimatePresence>
-      <Toaster position="top-left" reverseOrder={false} />
+      <Toaster
+        position="top-left"
+        reverseOrder={false}
+        toastOptions={{
+          duration: 4000,
+          
+        }}
+      />
     </>
   );
 };
