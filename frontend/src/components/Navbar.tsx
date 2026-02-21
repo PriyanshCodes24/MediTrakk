@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navitem from "./Navitem";
 import { BsCalendarPlus } from "react-icons/bs";
 import { FaUserAlt, FaUserInjured } from "react-icons/fa";
@@ -31,6 +31,7 @@ export const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [openNotification, setOpenNotification] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const notificationRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -43,6 +44,23 @@ export const Navbar = () => {
     };
     fetchNotifications();
   }, [user]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
+        setOpenNotification(false);
+      }
+    };
+    if (openNotification) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.addEventListener("mousedown", handleClickOutside);
+    };
+  }, [openNotification]);
 
   const logoutHandler = () => {
     setOpen(false);
@@ -116,7 +134,7 @@ export const Navbar = () => {
           />
         )}
         {user && (
-          <div className="relative">
+          <div ref={notificationRef} className="relative">
             <div
               onClick={() => setOpenNotification(!openNotification)}
               className="px-3 py-2 cursor-pointer select-none"
