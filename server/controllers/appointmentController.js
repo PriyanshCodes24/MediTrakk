@@ -185,6 +185,14 @@ const cancelAppointment = asyncHandler(async (req, res) => {
 
   appointment.status = "cancelled";
   appointment.save();
+
+  await Notification.create({
+    user: req.user.role === "doctor" ? appointment.patient : appointment.doctor,
+    type: "appointment_status",
+    relatedId: appointmentId,
+    onModel: "Appointment",
+    message: "Your appointment has been cancelled",
+  });
   return res
     .status(200)
     .json({ message: "Appointment canceled successfully", appointment });
@@ -254,14 +262,13 @@ const updateAppointmentStatus = (newStatus) =>
       appointment,
     });
 
-    const noti = await Notification.create({
+    await Notification.create({
       user: appointment.patient,
       type: "appointment_status",
       message: `Your appointment has been ${newStatus}`,
       relatedId: appointmentId,
       onModel: "Appointment",
     });
-    console.log(noti);
   });
 
 module.exports = {

@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { FaUserDoctor, FaUserShield } from "react-icons/fa6";
 import api from "../Utils/axios";
 import { GrClearOption } from "react-icons/gr";
+import toast from "react-hot-toast";
 
 type Notification = {
   _id: string;
@@ -67,6 +68,19 @@ export const Navbar = () => {
     if (window.confirm("Are you sure you want to sign out")) {
       logout();
       navigate("/login");
+    }
+  };
+
+  const clearNotiHandler = async () => {
+    try {
+      if (!window.confirm("Are you sure you want to clear all notifications"))
+        return;
+      const { data } = await api.delete("/notifications");
+      setNotifications([]);
+      toast.success(data.message);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Internal server error");
     }
   };
 
@@ -163,7 +177,10 @@ export const Navbar = () => {
                 <h2 className="text-sm font-semibold text-white">
                   Notification
                 </h2>
-                <GrClearOption className="text-gray-300 hover:text-white cursor-pointer" />
+                <GrClearOption
+                  onClick={clearNotiHandler}
+                  className="text-gray-300 hover:text-white cursor-pointer"
+                />
               </div>
               {/* notifications */}
               <div>

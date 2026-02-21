@@ -21,8 +21,18 @@ const getNotifications = async (req, res) => {
     res.json(notifications);
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "Could not " });
+    res.status(500).json({ message: "Could not fetch notifications" });
   }
 };
 
-module.exports = { getNotifications };
+const clearNotifications = async (req, res) => {
+  try {
+    await Notification.deleteMany({ user: req.user.id });
+    res.status(200).json({ message: "Cleared notifications" });
+  } catch (error) {
+    console.log(e);
+    res.status(500).json({ message: "Could not clear notifications" });
+  }
+};
+
+module.exports = { getNotifications, clearNotifications };

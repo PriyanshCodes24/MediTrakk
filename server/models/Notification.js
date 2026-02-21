@@ -12,7 +12,7 @@ const notificationSchema = new mongoose.Schema(
       enum: [
         "appointment_status",
         "doctor_removed",
-        " appointment_transfer",
+        "appointment_transfer",
         "general ",
       ],
       required: true,
