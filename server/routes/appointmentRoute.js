@@ -37,13 +37,13 @@ router.post(
 );
 router.get("/", protect, authorizeRole("admin"), getAllAppointments);
 router.get("/doctor", protect, authorizeRole("doctor"), getDoctorAppointments);
-router.get("/availability", protect, getAvailability);
 router.get(
   "/patient",
   protect,
   authorizeRole("patient"),
   getPatientAppointments,
 );
+router.get("/availability", protect, getAvailability);
 
 router.patch(
   "/:id/cancel",

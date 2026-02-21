@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/User");
 const mongoose = require("mongoose");
 const DoctorPatient = require("../models/DoctorPatient");
+const Notification = require("../models/Notification");
 
 const updateStatus = async () => {
   const now = new Date();
@@ -252,6 +253,15 @@ const updateAppointmentStatus = (newStatus) =>
       message: `Appointment ${newStatus} successfully`,
       appointment,
     });
+
+    const noti = await Notification.create({
+      user: appointment.patient,
+      type: "appointment_status",
+      message: `Your appointment has been ${newStatus}`,
+      relatedId: appointmentId,
+      onModel: "Appointment",
+    });
+    console.log(noti);
   });
 
 module.exports = {

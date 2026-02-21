@@ -17,6 +17,7 @@ app.use("/api/users", require("./routes/userRoute"));
 app.use("/api/appointments", require("./routes/appointmentRoute"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/reports", require("./routes/reportRoute"));
+app.use("/api/notifications", require("./routes/notificationRoutes"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(require("./middleware/errorMiddleware"));
