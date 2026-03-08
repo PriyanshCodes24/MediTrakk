@@ -143,12 +143,12 @@ export const MyAppointments = () => {
         <>
           <ul className="text-gray-700 space-y-4 text-sm">
             {appointments.map((appt) => (
-              <div
+              <li
                 key={appt._id}
-                className="bg-white rounded-xl shadow-md p-5 mb-4 hover:shadow-lg transition-shadow duration-400"
+                className="bg-white rounded-xl shadow-md p-5 hover:shadow-lg transition-shadow duration-400"
               >
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                  {/* Left side — appointment details */}
+                <div className="flex flex-col gap-3">
+                  {/* details */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800">
                       {user?.role === "patient"
@@ -196,7 +196,7 @@ export const MyAppointments = () => {
                     </p>
                   </div>
 
-                  {/* Right side — action buttons */}
+                  {/* Buttons */}
                   <div className="flex flex-wrap gap-2">
                     {(user?.role === "patient"
                       ? ["approved", "pending", undefined].includes(
@@ -231,7 +231,7 @@ export const MyAppointments = () => {
                     )}
                   </div>
                 </div>
-              </div>
+              </li>
             ))}
           </ul>
         </>

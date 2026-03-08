@@ -138,7 +138,7 @@ const MyReports = () => {
             {reports.map((rep) => (
               <div
                 key={rep._id}
-                className="bg-white rounded-xl shadow-md p-5 mb-4 hover:shadow-lg transition-shadow duration-400 border border-gray-100"
+                className="bg-white rounded-xl shadow-md p-5 hover:shadow-lg transition-shadow duration-400 border border-gray-100"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   {/* Left side — report details */}
