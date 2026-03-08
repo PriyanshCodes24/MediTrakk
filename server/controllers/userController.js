@@ -3,6 +3,7 @@ const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 const Appointment = require("../models/Appointment");
 const DoctorPatient = require("../models/DoctorPatient");
+const Notification = require("../models/Notification");
 
 const getUserProfile = asyncHandler(async (req, res) => {
   if (!req.user || !req.user.id) {
@@ -60,23 +61,41 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
 const deleteUser = asyncHandler(async (req, res) => {
   const userId = req.params.id;
+
   const user = await User.findById(userId);
-  if (!mongoose.Types.ObjectId.isValid(user))
+  if (!mongoose.Types.ObjectId.isValid(userId))
     return res.status(400).json({ message: "Invalid user ID" });
 
   if (!user) return res.status(404).json({ message: "User not found" });
 
-  await Appointment.deleteMany({
-    $or: [{ doctor: userId }, { patient: userId }],
-  });
+  if (user.role === "doctor") {
+    const appointments = await Appointment.find({
+      doctor: userId,
+      date: { $gt: new Date() },
+      status: { $in: ["pending", "approved"] },
+    });
 
-  await DoctorPatient.deleteMany({
-    $or: [{ doctor: userId }, { patient: userId }],
-  });
+    const patientIds = [
+      ...new Set(appointments.map((appt) => appt.patient.toString())),
+    ];
 
-  await user.deleteOne();
+    const notifications = patientIds.map((patientId) => ({
+      user: patientId,
+      type: "doctor_removed",
+      message: `Your doctor ${user.name} is no longer available. You can transfer your appointments.`,
+      relatedId: userId,
+      onModel: "User",
+    }));
 
-  return res.status(200).json({ message: "User deleted successfully", user });
+    if (notifications.length > 0) {
+      await Notification.insertMany(notifications);
+    }
+  }
+
+  user.isDeleted = true;
+  await user.save();
+
+  res.status(200).json({ message: "User deleted successfully" });
 });
 
 module.exports = {

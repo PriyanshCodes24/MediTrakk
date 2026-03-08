@@ -271,6 +271,56 @@ const updateAppointmentStatus = (newStatus) =>
     });
   });
 
+const transferAppointments = asyncHandler(async (req, res) => {
+  const { oldDoctorId, newDoctorId } = req.body;
+  const patientId = req.user.id;
+
+  const MAX_PER_SLOT = 3;
+
+  const appointments = await Appointment.find({
+    patient: patientId,
+    doctor: oldDoctorId,
+    date: { $gt: new Date() },
+    status: { $in: ["pending", "approved"] },
+  });
+
+  const transferred = [];
+  const failed = [];
+
+  for (const appt of appointments) {
+    const slotStart = new Date(appt.date);
+    slotStart.setSeconds(0, 0);
+
+    const slotEnd = new Date(slotStart);
+    slotEnd.setMinutes(slotEnd.getMinutes() + 30);
+
+    const count = await Appointment.countDocuments({
+      doctor: newDoctorId,
+      date: {
+        $gte: slotStart,
+        $lt: slotEnd,
+      },
+      status: { $in: ["pending", "approved"] },
+    });
+
+    if (count >= MAX_PER_SLOT) {
+      failed.push(appt._id);
+      continue;
+    }
+
+    appt.doctor = newDoctorId;
+    await appt.save();
+
+    transferred.push(appt._id);
+  }
+
+  res.json({
+    message: "Transfer completed",
+    transferred,
+    failed,
+  });
+});
+
 module.exports = {
   createAppointment,
   getDoctorAppointments,
@@ -279,4 +329,5 @@ module.exports = {
   getAllAppointments,
   cancelAppointment,
   getAvailability,
+  transferAppointments,
 };

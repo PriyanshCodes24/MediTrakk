@@ -9,6 +9,7 @@ const {
   getAllAppointments,
   cancelAppointment,
   getAvailability,
+  transferAppointments,
 } = require("../controllers/appointmentController");
 const { body } = require("express-validator");
 const validateRequest = require("../middleware/validateRequest");
@@ -35,6 +36,8 @@ router.post(
   validateRequest,
   createAppointment,
 );
+router.post("/transfer", protect, transferAppointments);
+
 router.get("/", protect, authorizeRole("admin"), getAllAppointments);
 router.get("/doctor", protect, authorizeRole("doctor"), getDoctorAppointments);
 router.get(
