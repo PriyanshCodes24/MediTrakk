@@ -91,6 +91,9 @@ const Notification = () => {
         newDoctorId: selectedDoctor,
       });
 
+      const { data } = await api.get("/notifications");
+      setNotifications(data);
+
       toast.success("Appointments transferred successfully");
 
       setTransferModalOpen(false);
@@ -162,7 +165,7 @@ const Notification = () => {
                 </p>
                 <p className="text-gray-400 text-xs mt-1">{noti?.message}</p>
               </div>
-              {noti.type === "doctor_removed" && (
+              {noti.type === "doctor_removed" && !noti.read && (
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -177,6 +180,8 @@ const Notification = () => {
           ))}
         </div>
       </div>
+
+      {/* Transfer Modal */}
       {transferModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-gray-900 rounded-xl p-6 w-full max-w-md border border-white/10 shadow-xl">

@@ -314,6 +314,15 @@ const transferAppointments = asyncHandler(async (req, res) => {
     transferred.push(appt._id);
   }
 
+  await Notification.updateMany(
+    {
+      user: patientId,
+      type: "doctor_removed",
+      relatedId: oldDoctorId,
+    },
+    { $set: { read: true } },
+  );
+
   res.json({
     message: "Transfer completed",
     transferred,
