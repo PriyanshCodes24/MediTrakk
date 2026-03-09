@@ -7,6 +7,7 @@ const {
   getDoctorList,
   getAllUsers,
   deleteUser,
+  reactivateUser,
 } = require("../controllers/userController");
 const { body } = require("express-validator");
 const validateRequest = require("../middleware/validateRequest");
@@ -25,8 +26,9 @@ router.put(
     body("email").trim().isEmail().withMessage("Valid email is required"),
   ],
   validateRequest,
-  updateUserProfile
+  updateUserProfile,
 );
 router.delete("/:id", protect, authorizeRole("admin"), deleteUser);
+router.patch("/:id", protect, authorizeRole("admin"), reactivateUser);
 
 module.exports = router;

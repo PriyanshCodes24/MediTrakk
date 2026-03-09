@@ -96,6 +96,20 @@ const deleteUser = asyncHandler(async (req, res) => {
 
   res.status(200).json({ message: "User deleted successfully" });
 });
+const reactivateUser = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+
+  const user = await User.findById(userId);
+  if (!mongoose.Types.ObjectId.isValid(userId))
+    return res.status(400).json({ message: "Invalid user ID" });
+
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  user.isDeleted = false;
+  await user.save();
+
+  res.status(200).json({ message: "User reactivated successfully" });
+});
 
 module.exports = {
   getUserProfile,
@@ -103,4 +117,5 @@ module.exports = {
   getDoctorList,
   getAllUsers,
   deleteUser,
+  reactivateUser,
 };
