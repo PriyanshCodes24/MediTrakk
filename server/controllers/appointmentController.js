@@ -288,8 +288,12 @@ const transferAppointments = asyncHandler(async (req, res) => {
   const failed = [];
 
   for (const appt of appointments) {
-    const slotStart = new Date(appt.date);
-    slotStart.setSeconds(0, 0);
+    const normalized = new Date(appt.date);
+
+    const minutes = normalized.getMinutes();
+    normalized.setMinutes(minutes < 30 ? 0 : 30, 0, 0);
+
+    const slotStart = new Date(normalized);
 
     const slotEnd = new Date(slotStart);
     slotEnd.setMinutes(slotEnd.getMinutes() + 30);
@@ -304,7 +308,7 @@ const transferAppointments = asyncHandler(async (req, res) => {
     });
 
     if (count >= MAX_PER_SLOT) {
-      failed.push(appt._id);
+      failed.push({ id: appt._id, date: appt.date });
       continue;
     }
 

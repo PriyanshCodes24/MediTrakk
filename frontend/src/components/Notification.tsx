@@ -86,17 +86,42 @@ const Notification = () => {
     if (!selectedDoctor || !oldDoctorId) return;
 
     try {
-      await api.post("/appointments/transfer", {
+      const response = await api.post("/appointments/transfer", {
         oldDoctorId,
         newDoctorId: selectedDoctor,
       });
 
+      const { transferred, failed } = response.data;
+
       const { data } = await api.get("/notifications");
       setNotifications(data);
 
-      toast.success("Appointments transferred successfully");
+      console.log(response);
 
-      setTransferModalOpen(false);
+      if (transferred.length > 0) {
+        toast.success(
+          `${transferred.length} appointment(s) transferred successfully`,
+        );
+      }
+      if (failed.length > 0) {
+        const failedTimes = failed
+          .map((appt: any) => {
+            const d = new Date(appt.date);
+            return d.toLocaleString("en-GB", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            });
+          })
+          .join(", ");
+
+        toast.error(
+          `These appointments could not be transferred (slot full): ${failedTimes}`,
+        );
+      }
+
+      if (failed.length === 0) {
+        setTransferModalOpen(false);
+      }
       setSelectedDoctor("");
       setOldDoctorId(null);
     } catch (error: any) {
