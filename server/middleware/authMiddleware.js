@@ -12,6 +12,11 @@ const protect = asyncHandler(async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id).select("-password -__v");
+    if (user.isDeleted) {
+      return res
+        .status(403)
+        .json({ message: "Your account has been deactivated" });
+    }
     req.user = user;
     next();
   } catch (e) {
