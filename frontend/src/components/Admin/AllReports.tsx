@@ -87,7 +87,7 @@ const AllReports = () => {
               </p>
               <button
                 type="button"
-                className="text-white bg-blue-400 px-2 py-1 rounded-md hover:bg-blue-500 cursor-pointer mt-2 "
+                className="text-white bg-red-500 px-2 py-1 rounded-md hover:bg-red-600 cursor-pointer mt-2 "
                 onClick={() => handleDelete(report._id)}
               >
                 {loadingDelete ? "deleting..." : "delete"}
