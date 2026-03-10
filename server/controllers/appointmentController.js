@@ -4,6 +4,7 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 const DoctorPatient = require("../models/DoctorPatient");
 const Notification = require("../models/Notification");
+const sendEmail = require("../utils/sendMail");
 
 const updateStatus = async () => {
   const now = new Date();
@@ -27,6 +28,7 @@ const updateStatus = async () => {
 
 const createAppointment = asyncHandler(async (req, res) => {
   const { doctor, date, reason } = req.body;
+  const patient = req.user.id;
 
   const appointmentDate = new Date(date);
   if (isNaN(appointmentDate.getTime())) {
@@ -53,7 +55,7 @@ const createAppointment = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Doctor not found" });
 
   const appointmentExists = await Appointment.findOne({
-    patient: req.user.id,
+    patient,
     doctor,
     date: appointmentDate,
     status: { $in: ["pending", "approved"] },
@@ -90,7 +92,6 @@ const createAppointment = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "This time slot is fully booked" });
   }
 
-  const patient = req.user.id;
   const appointment = await Appointment.create({
     patient,
     doctor,
@@ -103,6 +104,17 @@ const createAppointment = asyncHandler(async (req, res) => {
     {},
     { upsert: true, setDefaultsOnInsert: true },
   );
+  await sendEmail(
+    req.user.email,
+    "Appointment Created",
+    `Your appointment has been scheduled for ${appointmentDate.toLocaleTimeString()} with Dr. ${doctorExists.name}`,
+  );
+  await sendEmail(
+    doctorExists.email,
+    "New Appointment",
+    `A new appointment has been scheduled for ${appointmentDate.toLocaleTimeString()} with ${req.user.name}`,
+  );
+
   return res.status(201).json({ message: "Appointment created", appointment });
 });
 
@@ -162,42 +174,6 @@ const getAllAppointments = asyncHandler(async (req, res) => {
     .json({ message: "Appointments Fetched Successfully", appointments });
 });
 
-const cancelAppointment = asyncHandler(async (req, res) => {
-  const user = req.user.id;
-  const role = req.user.role;
-  const appointmentId = req.params.id;
-
-  if (!mongoose.Types.ObjectId.isValid(appointmentId))
-    return res.status(400).json({ message: "Invalid Appointment ID" });
-
-  const appointment = await Appointment.findById(appointmentId);
-  if (!appointment)
-    return res.status(404).json({ message: "Appointment not found" });
-
-  if (
-    role !== "admin" &&
-    ((role === "patient" && appointment.patient.toString() !== user) ||
-      (role === "doctor" && appointment.doctor.toString() !== user))
-  )
-    return res
-      .status(403)
-      .json({ message: "Not authorized to cancel this appointment" });
-
-  appointment.status = "cancelled";
-  appointment.save();
-
-  await Notification.create({
-    user: req.user.role === "doctor" ? appointment.patient : appointment.doctor,
-    type: "appointment_status",
-    relatedId: appointmentId,
-    onModel: "Appointment",
-    message: "Your appointment has been cancelled",
-  });
-  return res
-    .status(200)
-    .json({ message: "Appointment canceled successfully", appointment });
-});
-
 const getAvailability = async (req, res) => {
   const { date, doctor } = req.query;
 
@@ -233,6 +209,53 @@ const getAvailability = async (req, res) => {
   res.json({ slotCounts });
 };
 
+const cancelAppointment = asyncHandler(async (req, res) => {
+  const user = req.user.id;
+  const role = req.user.role;
+  const appointmentId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(appointmentId))
+    return res.status(400).json({ message: "Invalid Appointment ID" });
+
+  const appointment =
+    await Appointment.findById(appointmentId).populate("patient doctor");
+  if (!appointment)
+    return res.status(404).json({ message: "Appointment not found" });
+
+  if (
+    role !== "admin" &&
+    ((role === "patient" && appointment.patient._id.toString() !== user) ||
+      (role === "doctor" && appointment.doctor._id.toString() !== user))
+  )
+    return res
+      .status(403)
+      .json({ message: "Not authorized to cancel this appointment" });
+
+  appointment.status = "cancelled";
+  appointment.save();
+
+  const message = `Your appointment on ${appointment.date.toLocaleString()} has been cancelled by ${req.user.role === "patient" ? req.user.name : `Dr. ${appointment.doctor.name}`}`;
+
+  await Notification.create({
+    user: req.user.role === "doctor" ? appointment.patient : appointment.doctor,
+    type: "appointment_status",
+    relatedId: appointmentId,
+    onModel: "Appointment",
+    message,
+  });
+
+  await sendEmail(
+    req.user.role === "doctor"
+      ? appointment.patient.email
+      : appointment.doctor.email,
+    "Appointment Cancelled",
+    message,
+  );
+  return res
+    .status(200)
+    .json({ message: "Appointment canceled successfully", appointment });
+});
+
 const updateAppointmentStatus = (newStatus) =>
   asyncHandler(async (req, res) => {
     const user = req.user.id;
@@ -241,7 +264,8 @@ const updateAppointmentStatus = (newStatus) =>
     if (!mongoose.Types.ObjectId.isValid(appointmentId))
       return res.status(400).json({ message: "Invalid Appointment ID" });
 
-    const appointment = await Appointment.findById(appointmentId);
+    const appointment =
+      await Appointment.findById(appointmentId).populate("patient");
     if (!appointment)
       return res.status(404).json({ message: "Appointment not found" });
 
@@ -257,17 +281,26 @@ const updateAppointmentStatus = (newStatus) =>
 
     appointment.status = newStatus;
     await appointment.save();
-    res.status(200).json({
-      message: `Appointment ${newStatus} successfully`,
-      appointment,
-    });
+
+    const message = `Your appointment on ${appointment.date.toLocaleString()} has been ${newStatus} by Dr. ${req.user.name}`;
 
     await Notification.create({
       user: appointment.patient,
       type: "appointment_status",
-      message: `Your appointment has been ${newStatus}`,
+      message,
       relatedId: appointmentId,
       onModel: "Appointment",
+    });
+
+    await sendEmail(
+      appointment.patient.email,
+      `Appointment ${newStatus}`,
+      message,
+    );
+
+    res.status(200).json({
+      message,
+      appointment,
     });
   });
 

@@ -13,7 +13,7 @@ const notificationSchema = new mongoose.Schema(
         "appointment_status",
         "doctor_removed",
         "appointment_transfer",
-        "general ",
+        "general",
       ],
       required: true,
     },
