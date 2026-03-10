@@ -16,7 +16,7 @@ const AllUsers = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
+  const [loadingDeactivate, setLoadingDeactivate] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -36,7 +36,7 @@ const AllUsers = () => {
   const handleDelete = async (id: string) => {
     try {
       if (!window.confirm("Are you sure you want to delete this user?")) return;
-      setLoadingDelete(true);
+      setLoadingDeactivate(true);
       await api.delete(`/users/${id}`);
 
       setUsers((prev) =>
@@ -50,14 +50,14 @@ const AllUsers = () => {
       console.error(e);
       toast.error("User could not be deleted");
     } finally {
-      setLoadingDelete(false);
+      setLoadingDeactivate(false);
     }
   };
   const handleReactivate = async (id: string) => {
     try {
       if (!window.confirm("Are you sure you want to reactivate this user?"))
         return;
-      setLoadingDelete(true);
+      setLoadingDeactivate(true);
       await api.patch(`/users/${id}`, {});
 
       setUsers((prev) =>
@@ -71,7 +71,7 @@ const AllUsers = () => {
       console.error(e);
       toast.error("User could not be reactivated");
     } finally {
-      setLoadingDelete(false);
+      setLoadingDeactivate(false);
     }
   };
 
@@ -128,7 +128,7 @@ const AllUsers = () => {
                   className="text-white bg-emerald-400 px-2 py-1 rounded-md hover:bg-emerald-500 cursor-pointer mt-2 "
                   onClick={() => handleReactivate(user._id)}
                 >
-                  {loadingDelete ? "activating..." : "reactivate"}
+                  {loadingDeactivate ? "activating..." : "reactivate"}
                 </button>
               ) : (
                 <button
@@ -136,7 +136,7 @@ const AllUsers = () => {
                   className="text-white bg-red-500 px-2 py-1 rounded-md hover:bg-red-600 cursor-pointer mt-2 "
                   onClick={() => handleDelete(user._id)}
                 >
-                  {loadingDelete ? "deleting..." : "delete"}
+                  {loadingDeactivate ? "deactivating..." : "deactivate"}
                 </button>
               )}
             </li>
