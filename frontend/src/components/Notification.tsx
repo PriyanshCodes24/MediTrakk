@@ -133,12 +133,22 @@ const Notification = () => {
   };
 
   const toggleNotifications = async () => {
-    const opened = !openNotification;
-    setOpenNotification(opened);
+    const opening = !openNotification;
+    setOpenNotification(opening);
 
-    if (opened) {
-      await api.patch("/notifications/mark-all-read");
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    if (opening && unreadCount > 0) {
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.type !== "doctor_removed" ? { ...n, read: true } : n,
+        ),
+      );
+
+      try {
+        await api.patch("/notifications/mark-all-read");
+        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 

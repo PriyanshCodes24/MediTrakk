@@ -104,16 +104,23 @@ const createAppointment = asyncHandler(async (req, res) => {
     {},
     { upsert: true, setDefaultsOnInsert: true },
   );
+
+  const message = `A new appointment has been scheduled for ${appointmentDate.toLocaleTimeString()} with ${req.user.name}`;
+
+  await Notification.create({
+    user: appointment.doctor,
+    type: "general",
+    message,
+    relatedId: appointment._id,
+    onModel: "Appointment",
+  });
+
   await sendEmail(
     req.user.email,
     "Appointment Created",
     `Your appointment has been scheduled for ${appointmentDate.toLocaleTimeString()} with Dr. ${doctorExists.name}`,
   );
-  await sendEmail(
-    doctorExists.email,
-    "New Appointment",
-    `A new appointment has been scheduled for ${appointmentDate.toLocaleTimeString()} with ${req.user.name}`,
-  );
+  await sendEmail(doctorExists.email, "New Appointment", message);
 
   return res.status(201).json({ message: "Appointment created", appointment });
 });
