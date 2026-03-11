@@ -23,6 +23,7 @@ type Notification = {
 const Notification = () => {
   const [openNotification, setOpenNotification] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const unreadCount = notifications.filter((n) => !n.read).length;
   const notificationRef = useRef<HTMLDivElement | null>(null);
   const { user } = useAuth();
 
@@ -131,12 +132,22 @@ const Notification = () => {
     }
   };
 
+  const toggleNotifications = async () => {
+    const opened = !openNotification;
+    setOpenNotification(opened);
+
+    if (opened) {
+      await api.patch("/notifications/mark-all-read");
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    }
+  };
+
   return (
     <div ref={notificationRef} className="relative">
       {/* bell icon */}
       <div
-        onClick={() => setOpenNotification(!openNotification)}
-        className="px-3 py-2 cursor-pointer select-none"
+        onClick={toggleNotifications}
+        className="px-3 py-2 cursor-pointer select-none relative"
       >
         <svg
           className="w-5 h-5 text-gray-300 hover:text-white opacity-60 hover:opacity-100 transition"
@@ -151,6 +162,12 @@ const Notification = () => {
           <path d="M10.268 21a2 2 0 0 0 3.464 0"></path>
           <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path>
         </svg>
+
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 text-[10px] px-1.5  min-w-[16px] h-4 flex items-center justify-center bg-red-600 rounded-full">
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
       </div>
 
       {/* dropdown */}
