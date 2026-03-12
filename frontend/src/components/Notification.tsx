@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { GrClearOption } from "react-icons/gr";
 import api from "../Utils/axios";
 import { useAuth } from "../context/AuthContext";
+import { BiTransfer } from "react-icons/bi";
 
 type Notification = {
   _id: string;
@@ -251,9 +252,9 @@ const Notification = () => {
                       e.preventDefault();
                       openTransferModal(noti.relatedId?._id);
                     }}
-                    className="text-xs text-blue-400 hover:underline ml-2"
+                    className="text-lg text-blue-400 hover:underline ml-2 cursor-pointer"
                   >
-                    Transfer
+                    <BiTransfer />
                   </button>
                 )}
               </div>
