@@ -183,7 +183,7 @@ const Notification = () => {
 
       {/* dropdown */}
       <div
-        className={`absolute right-0 top-full mt-4 w-80 max-h-96 overflow-y-auto z-50 bg-[#111] rounded-xl shadow-xl border border-white/10 animate-in fade-in zoom-in transform transition-all duration-200 ease-out ${openNotification ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95 pointer-events-none"}`}
+        className={`notification-scroll absolute right-0 top-full mt-4 w-80 max-h-96 overflow-y-auto z-50 bg-[#111] rounded-md shadow-xl border border-white/10 animate-in fade-in zoom-in transform transition-all duration-200 ease-out ${openNotification ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95 pointer-events-none"}`}
       >
         {/* header */}
         <div className="flex justify-between items-center  py-4 px-3 border-b border-white/10  ">

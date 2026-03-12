@@ -5,3 +5,34 @@
 body {
   font-family: "Poppins", sans-serif;
 }
+
+/* minimal dark scrollbar */
+
+.notification-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+}
+
+/* body scrollbar */
+
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.462);
+  border-bottom-left-radius: 999px;
+  border-bottom-right-radius: 999px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.559);
+}
