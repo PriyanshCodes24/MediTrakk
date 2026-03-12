@@ -183,61 +183,82 @@ const Notification = () => {
 
       {/* dropdown */}
       <div
-        className={`notification-scroll absolute right-0 top-full mt-4 w-80 max-h-96 overflow-y-auto z-50 bg-[#111] rounded-md shadow-xl border border-white/10 animate-in fade-in zoom-in transform transition-all duration-200 ease-out ${openNotification ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95 pointer-events-none"}`}
+        className={`absolute right-0 top-full mt-4 w-80 z-50 rounded-md shadow-xl border border-white/10 animate-in fade-in zoom-in transform transition-all duration-200 ease-out ${openNotification ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95 pointer-events-none"}`}
       >
-        {/* header */}
-        <div className="flex justify-between items-center  py-4 px-3 border-b border-white/10  ">
-          <h2 className="text-sm font-semibold text-white">Notification</h2>
-          <GrClearOption
-            onClick={clearNotiHandler}
-            className="text-gray-300 hover:text-white cursor-pointer"
-          />
-        </div>
-        {/* notification list */}
-        <div>
-          {notifications.length === 0 && (
-            <div className="px-4 py-6 text-center text-gray-400">
-              No notifications
-            </div>
-          )}
-          {notifications.map((noti) => (
-            <div
-              key={noti?._id}
-              className={`flex items-start gap-2 py-3 px-3 border-b border-white/5 transion ${noti.read ? "opacity-60 hover:bg-white/5" : "bg-white/5 hover:bg-white/10"}`}
-            >
-              {
-                <div className="w-2 flex justify-center">
+        <div className="bg-[#111] rounded-xl shadow-xl border border-white/10">
+          {/* header */}
+          <div className="flex justify-between items-center  py-4 px-3 border-b border-white/10  ">
+            <h2 className="text-sm font-semibold text-white">Notification</h2>
+            <GrClearOption
+              onClick={clearNotiHandler}
+              className="text-gray-300 hover:text-white cursor-pointer"
+            />
+          </div>
+          {/* notification list */}
+          <div className="notification-scroll max-h-80 overflow-y-auto">
+            {notifications.length === 0 && (
+              <div className="px-4 py-6 text-center text-gray-400">
+                No notifications
+              </div>
+            )}
+            {notifications.map((noti) => (
+              <div
+                key={noti._id}
+                className={`flex gap-3 py-3 px-3 border-b border-white/5 transition ${
+                  noti.read
+                    ? "opacity-60 hover:bg-white/5"
+                    : "bg-white/5 hover:bg-white/10"
+                }`}
+              >
+                {/* unread dot */}
+                <div className="w-2 flex justify-center pt-2 mt-2">
                   <span
-                    className={`w-2 h-2 mt-3 rounded-full ${noti.read ? "opacity-0" : "bg-blue-500 "}`}
+                    className={`w-2 h-2 rounded-full ${
+                      noti.read ? "opacity-0" : "bg-blue-500"
+                    }`}
                   />
                 </div>
-              }
-              <div className="w-8 h-8 rounded-full  bg-indigo-600 flex items-center justify-center text-xs text-white font-semibold">
-                {noti?.relatedId?.doctor?.name.charAt(0) ??
-                  noti?.relatedId?.patient?.name.charAt(0) ??
-                  "S"}
+
+                {/* avatar */}
+                <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-xs text-white font-semibold shrink-0">
+                  {noti?.relatedId?.doctor?.name?.charAt(0) ??
+                    noti?.relatedId?.patient?.name?.charAt(0) ??
+                    "S"}
+                </div>
+
+                {/* text */}
+                <div className="flex-1 leading-snug">
+                  <p className="text-sm text-gray-200">
+                    <span className="font-semibold">
+                      {noti?.relatedId?.doctor?.name ??
+                        noti?.relatedId?.patient?.name ??
+                        "System"}
+                    </span>{" "}
+                    <span className="text-gray-400">{noti.message}</span>
+                  </p>
+
+                  <p className="text-xs text-gray-500 mt-1">
+                    {new Date().toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                    })}
+                  </p>
+                </div>
+
+                {noti.type === "doctor_removed" && !noti.read && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openTransferModal(noti.relatedId?._id);
+                    }}
+                    className="text-xs text-blue-400 hover:underline ml-2"
+                  >
+                    Transfer
+                  </button>
+                )}
               </div>
-              <div className="flex-1 text-gray-300 text-sm">
-                <p className="font-medium text-white">
-                  {noti?.relatedId?.doctor?.name ??
-                    noti?.relatedId?.patient?.name ??
-                    "System"}
-                </p>
-                <p className="text-gray-400 text-xs mt-1">{noti?.message}</p>
-              </div>
-              {noti.type === "doctor_removed" && !noti.read && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openTransferModal(noti.relatedId?._id);
-                  }}
-                  className="text-xs text-blue-400 hover:underline ml-2 cursor-pointer"
-                >
-                  Transfer
-                </button>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
