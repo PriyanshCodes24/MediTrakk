@@ -23,8 +23,11 @@ type Notification = {
 const Notification = () => {
   const [openNotification, setOpenNotification] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const unreadCount = notifications.filter((n) => !n.read).length;
   const notificationRef = useRef<HTMLDivElement | null>(null);
+  const [panelOpened, setPanelOpened] = useState(false);
+  const unreadCount = panelOpened
+    ? 0
+    : notifications.filter((n) => !n.read).length;
   const { user } = useAuth();
 
   const clearNotiHandler = async () => {
@@ -43,10 +46,13 @@ const Notification = () => {
     if (!user) return;
     const fetchNotifications = async () => {
       const { data } = await api.get("/notifications");
-
       setNotifications(data);
+      setPanelOpened(false);
     };
     fetchNotifications();
+
+    const interval = setInterval(fetchNotifications, 15000);
+    return () => clearInterval(interval);
   }, [user]);
 
   useEffect(() => {
@@ -136,16 +142,11 @@ const Notification = () => {
     const opening = !openNotification;
     setOpenNotification(opening);
 
-    if (opening && unreadCount > 0) {
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.type !== "doctor_removed" ? { ...n, read: true } : n,
-        ),
-      );
+    if (opening) {
+      setPanelOpened(true);
 
       try {
         await api.patch("/notifications/mark-all-read");
-        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       } catch (error) {
         console.error(error);
       }
@@ -202,8 +203,15 @@ const Notification = () => {
           {notifications.map((noti) => (
             <div
               key={noti?._id}
-              className="flex gap-3 py-3 px-4 hover:bg-white/5 transion border-b border-white/5"
+              className={`flex items-start gap-2 py-3 px-3 border-b border-white/5 transion ${noti.read ? "opacity-60 hover:bg-white/5" : "bg-white/5 hover:bg-white/10"}`}
             >
+              {
+                <div className="w-2 flex justify-center">
+                  <span
+                    className={`w-2 h-2 mt-3 rounded-full ${noti.read ? "opacity-0" : "bg-blue-500 "}`}
+                  />
+                </div>
+              }
               <div className="w-8 h-8 rounded-full  bg-indigo-600 flex items-center justify-center text-xs text-white font-semibold">
                 {noti?.relatedId?.doctor?.name.charAt(0) ??
                   noti?.relatedId?.patient?.name.charAt(0) ??
