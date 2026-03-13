@@ -174,6 +174,101 @@ MediTrakk Team`,
   res.status(200).json({ message: "User reactivated successfully" });
 });
 
+const requestDoctorRole = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id);
+
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  if (user.role === "doctor")
+    return res.status(400).json({ message: "You are aleady a doctor" });
+
+  if (user.doctorRequestStatus === "pending")
+    return res.status(400).json({ message: "Doctor request already pending" });
+
+  user.doctorRequestStatus = "pending";
+  await user.save();
+
+  res.status(200).json({ message: "Doctor request submitted successfully" });
+});
+
+const getDoctorRequest = asyncHandler(async (req, res) => {
+  const users = await User.find({ doctorRequestStatus: "pending" }).select(
+    "-password -__v",
+  );
+
+  res.status(200).json({
+    message: "Doctor requests fetched successfully",
+    requests: users,
+  });
+});
+
+const approveDoctorRequest = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(userId))
+    return res.status(400).json({ message: "Invalid user ID" });
+
+  const user = await User.findById(userId);
+
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  const appointments = await Appointment.find({
+    patient: userId,
+    date: { $gt: new Date() },
+    status: { $in: ["pending", "approved"] },
+  });
+
+  const doctorIds = [
+    ...new Set(appointments.map((appt) => appt.doctor.toString())),
+  ];
+
+  const notifications = doctorIds.map((doctorId) => ({
+    user: doctorId,
+    type: "appointment_status",
+    message: `Patient ${user.name} has become a doctor. Their appointments were cancelled.`,
+    relatedId: userId,
+    onModel: "User",
+  }));
+
+  if (notifications.length > 0) {
+    await Notification.insertMany(notifications);
+  }
+
+  await Appointment.updateMany(
+    {
+      patient: userId,
+      date: { $gt: new Date() },
+      status: { $in: ["pending", "approved"] },
+    },
+    { $set: { status: "cancelled" } }
+  );
+
+  user.role = "doctor";
+  user.doctorRequestStatus = "approved";
+
+  await user.save();
+
+  res.status(200).json({ message: "Doctor request approved" });
+});
+
+const rejectDoctorRequest = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+
+  const user = await User.findById(userId);
+
+  if (!user)
+    return res.status(404).json({
+      message: "User not found",
+    });
+
+  user.doctorRequestStatus = "rejected";
+  await user.save();
+
+  res.status(200).json({
+    message: "Doctor requests rejected",
+  });
+});
+
 module.exports = {
   getUserProfile,
   updateUserProfile,
@@ -181,4 +276,8 @@ module.exports = {
   getAllUsers,
   deactivateUser,
   reactivateUser,
+  requestDoctorRole,
+  getDoctorRequest,
+  approveDoctorRequest ,
+  rejectDoctorRequest,
 };

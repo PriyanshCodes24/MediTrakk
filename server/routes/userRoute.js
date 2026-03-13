@@ -8,6 +8,10 @@ const {
   getAllUsers,
   reactivateUser,
   deactivateUser,
+  getDoctorRequest,
+  requestDoctorRole,
+  approveDoctorRequest,
+  rejectDoctorRequest,
 } = require("../controllers/userController");
 const { body } = require("express-validator");
 const validateRequest = require("../middleware/validateRequest");
@@ -30,5 +34,25 @@ router.put(
 );
 router.delete("/:id", protect, authorizeRole("admin"), deactivateUser);
 router.patch("/:id", protect, authorizeRole("admin"), reactivateUser);
+
+router.post("/doctor-requests", protect, requestDoctorRole);
+router.get(
+  "/doctor-requests",
+  protect,
+  authorizeRole("admin"),
+  getDoctorRequest,
+);
+router.patch(
+  "/doctor-requests/:id/approve",
+  protect,
+  authorizeRole("admin"),
+  approveDoctorRequest,
+);
+router.patch(
+  "/doctor-requests/:id/reject",
+  protect,
+  authorizeRole("admin"),
+  rejectDoctorRequest,
+);
 
 module.exports = router;

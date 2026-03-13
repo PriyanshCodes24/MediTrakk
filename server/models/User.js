@@ -28,6 +28,11 @@ const userSchema = new mongoose.Schema(
       enum: ["patient", "doctor", "admin"],
       default: "patient",
     },
+    doctorRequestStatus: {
+      type: String,
+      enum: ["none", "pending", "approved", "rejected"],
+      default: "none",
+    },
     isDeleted: {
       type: Boolean,
       default: false,
