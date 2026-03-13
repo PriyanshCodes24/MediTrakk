@@ -3,6 +3,7 @@ const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 const Appointment = require("../models/Appointment");
 const Notification = require("../models/Notification");
+const sendEmail = require("../utils/sendMail");
 
 const getUserProfile = asyncHandler(async (req, res) => {
   if (!req.user || !req.user.id) {
@@ -58,14 +59,19 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     .json({ message: "User Updated Successfully", user: updatedUser });
 });
 
-const deleteUser = asyncHandler(async (req, res) => {
+const deactivateUser = asyncHandler(async (req, res) => {
   const userId = req.params.id;
 
-  const user = await User.findById(userId);
   if (!mongoose.Types.ObjectId.isValid(userId))
     return res.status(400).json({ message: "Invalid user ID" });
 
+  const user = await User.findById(userId);
+
   if (!user) return res.status(404).json({ message: "User not found" });
+
+  if (user.isDeleted) {
+    return res.status(400).json({ message: "User already deactivated" });
+  }
 
   if (user.role === "doctor") {
     const appointments = await Appointment.find({
@@ -73,7 +79,6 @@ const deleteUser = asyncHandler(async (req, res) => {
       date: { $gt: new Date() },
       status: { $in: ["pending", "approved"] },
     });
-
     const patientIds = [
       ...new Set(appointments.map((appt) => appt.patient.toString())),
     ];
@@ -85,17 +90,62 @@ const deleteUser = asyncHandler(async (req, res) => {
       relatedId: userId,
       onModel: "User",
     }));
+    if (notifications.length > 0) {
+      await Notification.insertMany(notifications);
+    }
+  } else if (user.role === "patient") {
+    const appointments = await Appointment.find({
+      patient: userId,
+      date: { $gt: new Date() },
+      status: { $in: ["pending", "approved"] },
+    });
+    const doctorIds = [
+      ...new Set(appointments.map((appt) => appt.doctor.toString())),
+    ];
+    const notifications = doctorIds.map((doctorId) => ({
+      user: doctorId,
+      type: "appointment_status",
+      message: `Patient ${user.name} has been removed. Their appointments were cancelled.`,
+      relatedId: userId,
+      onModel: "User",
+    }));
 
     if (notifications.length > 0) {
       await Notification.insertMany(notifications);
     }
-  }
 
+    await Appointment.updateMany(
+      {
+        patient: userId,
+        date: { $gt: new Date() },
+        status: { $in: ["pending", "approved"] },
+      },
+      { $set: { status: "cancelled" } },
+    );
+  } else {
+    return res
+      .status(400)
+      .json({ message: "Admin accounts cannot be deleted" });
+  }
   user.isDeleted = true;
   await user.save();
 
+  sendEmail(
+    user.email,
+    "Account Deactivated - Meditrakk",
+    `Hello ${user.name},
+
+Your MediTrakk account has been deactivated by an administrator.
+
+If you believe this was a mistake, please contact support.
+
+Regards,
+MediTrakk Team`,
+  ).catch(console.error);
+
   res.status(200).json({ message: "User deleted successfully" });
 });
+
 const reactivateUser = asyncHandler(async (req, res) => {
   const userId = req.params.id;
 
@@ -108,6 +158,19 @@ const reactivateUser = asyncHandler(async (req, res) => {
   user.isDeleted = false;
   await user.save();
 
+  sendEmail(
+    user.email,
+    "Account Reactivated - MediTrakk",
+    `Hello ${user.name},
+
+Your MediTrakk account has been reactivated.
+
+You can now log in and continue using the platform.
+
+Regards,
+MediTrakk Team`,
+  ).catch(console.error);
+
   res.status(200).json({ message: "User reactivated successfully" });
 });
 
@@ -116,6 +179,6 @@ module.exports = {
   updateUserProfile,
   getDoctorList,
   getAllUsers,
-  deleteUser,
+  deactivateUser,
   reactivateUser,
 };

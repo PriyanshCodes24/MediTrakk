@@ -6,8 +6,8 @@ const {
   updateUserProfile,
   getDoctorList,
   getAllUsers,
-  deleteUser,
   reactivateUser,
+  deactivateUser,
 } = require("../controllers/userController");
 const { body } = require("express-validator");
 const validateRequest = require("../middleware/validateRequest");
@@ -28,7 +28,7 @@ router.put(
   validateRequest,
   updateUserProfile,
 );
-router.delete("/:id", protect, authorizeRole("admin"), deleteUser);
+router.delete("/:id", protect, authorizeRole("admin"), deactivateUser);
 router.patch("/:id", protect, authorizeRole("admin"), reactivateUser);
 
 module.exports = router;
