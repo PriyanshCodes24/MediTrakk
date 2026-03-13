@@ -115,12 +115,15 @@ const createAppointment = asyncHandler(async (req, res) => {
     onModel: "Appointment",
   });
 
-  await sendEmail(
+  sendEmail(
     req.user.email,
     "Appointment Created",
     `Your appointment has been scheduled for ${appointmentDate.toLocaleTimeString()} with Dr. ${doctorExists.name}`,
+  ).catch(console.error);
+
+  sendEmail(doctorExists.email, "New Appointment", message).catch(
+    console.error,
   );
-  await sendEmail(doctorExists.email, "New Appointment", message);
 
   return res.status(201).json({ message: "Appointment created", appointment });
 });
@@ -251,13 +254,13 @@ const cancelAppointment = asyncHandler(async (req, res) => {
     message,
   });
 
-  await sendEmail(
+  sendEmail(
     req.user.role === "doctor"
       ? appointment.patient.email
       : appointment.doctor.email,
     "Appointment Cancelled",
     message,
-  );
+  ).catch(console.error);
   return res
     .status(200)
     .json({ message: "Appointment canceled successfully", appointment });
@@ -299,11 +302,11 @@ const updateAppointmentStatus = (newStatus) =>
       onModel: "Appointment",
     });
 
-    await sendEmail(
+    sendEmail(
       appointment.patient.email,
       `Appointment ${newStatus}`,
       message,
-    );
+    ).catch(console.error);
 
     res.status(200).json({
       message,
